@@ -1,0 +1,96 @@
+import { Info, Calculator as CalculatorIcon, FolderOpen, TerminalSquare, Settings as SettingsIcon, Image, BookOpen, CalendarDays, Music2, MessageCircle } from 'lucide-react';
+import { registerApps } from '../core/appRuntime/appRegistry';
+
+registerApps([
+  {
+    id: 'about',
+    title: 'About BrowserOS',
+    icon: Info,
+    component: () => import('./about/AboutApp'),
+    defaultSize: { width: 420, height: 260 },
+    minSize: { width: 300, height: 180 },
+    singleInstance: true,
+  },
+  {
+    id: 'calculator',
+    title: 'Calculator',
+    icon: CalculatorIcon,
+    component: () => import('./calculator/CalculatorApp'),
+    defaultSize: { width: 300, height: 420 },
+    minSize: { width: 260, height: 360 },
+    resizable: false,
+  },
+  {
+    id: 'explorer',
+    title: 'Explorer',
+    icon: FolderOpen,
+    component: () => import('./explorer/ExplorerApp'),
+    defaultSize: { width: 620, height: 440 },
+    minSize: { width: 380, height: 280 },
+    // Multi-instance: each window keeps its own path/history via local state.
+  },
+  {
+    id: 'terminal',
+    title: 'Terminal',
+    icon: TerminalSquare,
+    component: () => import('./terminal/TerminalApp'),
+    defaultSize: { width: 560, height: 380 },
+    minSize: { width: 340, height: 220 },
+    // Multi-instance: each window keeps its own cwd/history via local state.
+  },
+  {
+    id: 'settings',
+    title: 'Settings',
+    icon: SettingsIcon,
+    component: () => import('./settings/SettingsApp'),
+    defaultSize: { width: 460, height: 380 },
+    minSize: { width: 400, height: 320 },
+    singleInstance: true,
+  },
+  {
+    id: 'wallpaper',
+    title: 'Wallpaper',
+    icon: Image,
+    component: () => import('./wallpaper/WallpaperApp'),
+    defaultSize: { width: 420, height: 380 },
+    minSize: { width: 340, height: 300 },
+    singleInstance: true,
+  },
+  {
+    id: 'readme',
+    title: 'README',
+    icon: BookOpen,
+    component: () => import('./readme/ReadmeApp'),
+    defaultSize: { width: 480, height: 460 },
+    minSize: { width: 340, height: 300 },
+    singleInstance: true,
+  },
+  {
+    id: 'calendar',
+    title: 'Calendar',
+    icon: CalendarDays,
+    component: () => import('./calendar/CalendarApp'),
+    defaultSize: { width: 340, height: 520 },
+    minSize: { width: 300, height: 440 },
+    singleInstance: true,
+  },
+  {
+    id: 'music',
+    title: 'Music',
+    icon: Music2,
+    component: () => import('./music/MusicApp'),
+    defaultSize: { width: 320, height: 480 },
+    minSize: { width: 280, height: 420 },
+    resizable: false,
+    singleInstance: true, // one AudioContext at a time keeps this simple and glitch-free
+  },
+  {
+    id: 'messages',
+    title: 'Messages',
+    icon: MessageCircle,
+    component: () => import('./messages/MessagesApp'),
+    defaultSize: { width: 460, height: 440 },
+    minSize: { width: 380, height: 340 },
+    singleInstance: true,
+  },
+]);

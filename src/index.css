@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces */
+  --color-os-bg: #c9c2e0;
+  --color-os-bg-2: #b9aed0;
+  --color-os-surface: #f5f1e8;
+  --color-os-surface-2: #ede6d6;
+
+  /* Ink */
+  --color-os-ink: #2b2438;
+  --color-os-ink-soft: #5b4f6e;
+
+  /* Accents */
+  --color-os-accent: #ff8b5e;
+  --color-os-accent-ink: #4a1f0b;
+  --color-os-mint: #6fcf97;
+  --color-os-danger: #e0607a;
+
+  /* Structure */
+  --color-os-border: #b9aed0;
+  --color-os-border-strong: #2b2438;
+
+  --font-display: "Silkscreen", "Courier New", monospace;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  --shadow-os-window: 0 12px 0 rgba(43, 36, 56, 0.14), 0 18px 30px rgba(43, 36, 56, 0.22);
+  --shadow-os-window-focused: 0 12px 0 rgba(255, 139, 94, 0.35), 0 20px 34px rgba(43, 36, 56, 0.3);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-os-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Pixel-cut corner utility — the signature "stepped" edge used on window
+   controls and dock chrome, standing in for both mac's circular traffic
+   lights and Windows' plain squares. */
+.pixel-cut {
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+}
