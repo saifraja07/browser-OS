@@ -98,7 +98,7 @@ export default function TerminalApp() {
             key={i}
             className={`whitespace-pre-wrap ${
               line.type === 'input'
-                ? 'text-[#6fcf97]'
+                ? 'text-[rgb(111,207,151)]'
                 : line.type === 'error'
                   ? 'text-[#ff6b8b]'
                   : 'text-[#e8e4f5]/90'
@@ -109,7 +109,7 @@ export default function TerminalApp() {
         ))}
 
         <div className="flex items-center gap-2">
-          <span className="shrink-0 text-[#6fcf97]">{cwd} $</span>
+          <span className="shrink-0 text-[rgb(111,207,151)]">{cwd} $</span>
           <input
             ref={inputRef}
             autoFocus
