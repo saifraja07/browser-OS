@@ -109,6 +109,18 @@ button:focus-visible {
   min-height: var(--os-dock-height);
 }
 
+/* Music app: the central disk only spins while a track is actually
+   playing — this class is applied/removed in JS, never left running. */
+@keyframes os-disk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.os-disk-spin {
+  animation: os-disk-spin 2.6s linear infinite;
+}
+
 .os-icon-shell {
   width: var(--os-icon-size);
   height: var(--os-icon-size);

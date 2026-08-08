@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useWindowStore, selectWindow, selectIsFocused } from '../../store/useWindowStore';
 import { getApp } from '../../core/appRuntime/appRegistry';
 import { useWindowDrag } from '../../hooks/useWindowDrag';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { MOBILE_DOCK_HEIGHT } from '../../core/windowManager/mobileLayout';
 import TitleBar from './TitleBar';
 import ResizeHandles from './ResizeHandles';
 
@@ -20,6 +22,7 @@ function WindowFrame({ id }) {
   const toggleMaximize = useWindowStore((s) => s.toggleMaximize);
   const focusWindow = useWindowStore((s) => s.focusWindow);
   const { onPointerDown, onPointerMove, onPointerUp } = useWindowDrag(id);
+  const isMobile = useIsMobile();
 
   const manifest = useMemo(() => getApp(win?.appId), [win?.appId]);
 
@@ -31,7 +34,13 @@ function WindowFrame({ id }) {
 
   if (!win) return null;
 
-  const workspaceBounds = { x: 8, y: 8, width: window.innerWidth - 16, height: window.innerHeight - 96 };
+  const dockReserve = isMobile ? MOBILE_DOCK_HEIGHT + 24 : 96;
+  const workspaceBounds = {
+    x: 8,
+    y: 8,
+    width: window.innerWidth - 16,
+    height: window.innerHeight - dockReserve,
+  };
 
   return (
     <motion.div
@@ -81,7 +90,9 @@ function WindowFrame({ id }) {
         )}
       </div>
 
-      <ResizeHandles windowId={id} resizable={win.resizable && !win.isMaximized} />
+      {/* Corner/edge resize handles are a fiddly, imprecise touch target —
+          resizing isn't part of the mobile spec, so keep it desktop-only. */}
+      <ResizeHandles windowId={id} resizable={win.resizable && !win.isMaximized && !isMobile} />
 
       {/* Theme-driven texture overlay (scanlines/dither/etc). Purely decorative:
           non-interactive and defaults to `none`, so themes without a texture

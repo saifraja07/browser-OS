@@ -29,6 +29,7 @@
  */
 
 import { DEFAULT_WINDOW, Z_INDEX_BASE, MIN_WINDOW_SIZE } from './constants';
+import { clampWindowToViewport } from './mobileLayout';
 
 let idCounter = 0;
 const generateId = (appId) => `win_${appId}_${Date.now()}_${idCounter++}`;
@@ -211,6 +212,19 @@ export function resizeWindow(state, id, bounds) {
       [id]: { ...win, x: bounds.x, y: bounds.y, width, height },
     },
   };
+}
+
+/**
+ * Clamps every window's bounds into the given viewport (mobile only — see
+ * mobileLayout.js). Called on resize/orientation-change so a window can
+ * never end up permanently off-screen or hidden behind the mobile dock.
+ */
+export function clampWindowsToViewport(state, viewportWidth, viewportHeight, dockReserve) {
+  const windows = {};
+  for (const [id, win] of Object.entries(state.windows)) {
+    windows[id] = clampWindowToViewport(win, viewportWidth, viewportHeight, dockReserve);
+  }
+  return { ...state, windows };
 }
 
 /** Returns the id of the highest z-index, non-minimized window, excluding `excludeId`. */

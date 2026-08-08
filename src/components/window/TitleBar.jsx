@@ -14,6 +14,7 @@ export default function TitleBar({
   return (
     <div
       onPointerDown={onPointerDown}
+      style={{ touchAction: 'none' }}
       className={`flex h-[var(--os-titlebar-height)] shrink-0 cursor-grab items-center justify-between border-b-[length:var(--os-border-width)] px-2 active:cursor-grabbing ${
         isFocused
           ? 'border-os-border-strong bg-os-accent/90'

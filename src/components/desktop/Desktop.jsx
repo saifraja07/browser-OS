@@ -6,7 +6,7 @@ import DesktopIcons from './DesktopIcons';
  * Desktop context-menu launching is intentionally disabled; apps can still
  * use the shared context menu where it makes sense (for example Explorer).
  */
-export default function Desktop({ children }) {
+export default function Desktop({ children, isMobile = false }) {
   const wallpaperId = useWallpaperStore((s) => s.wallpaperId);
   const wallpaper = getWallpaper(wallpaperId);
 
@@ -18,7 +18,9 @@ export default function Desktop({ children }) {
         backgroundSize: wallpaper.backgroundSize,
       }}
     >
-      <DesktopIcons />
+      {/* Mobile's primary navigation is the 3-icon dock + All Apps menu,
+          not scattered desktop icons — see MobileDock/MobileAppsMenu. */}
+      {!isMobile && <DesktopIcons />}
       {children}
     </div>
   );

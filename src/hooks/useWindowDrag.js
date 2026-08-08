@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useWindowStore } from '../store/useWindowStore';
+import { isMobileViewport, clampWindowToViewport } from '../core/windowManager/mobileLayout';
 
 /**
  * Returns an onPointerDown handler to spread onto a window's title bar.
@@ -38,7 +39,25 @@ export function useWindowDrag(windowId) {
 
       const dx = e.clientX - drag.startPointerX;
       const dy = e.clientY - drag.startPointerY;
-      moveWindow(windowId, drag.startWinX + dx, Math.max(0, drag.startWinY + dy));
+      let nextX = drag.startWinX + dx;
+      let nextY = Math.max(0, drag.startWinY + dy);
+
+      // Keep the window reachable on mobile: never let it drag fully
+      // off-screen or under the dock. Desktop dragging is unaffected.
+      if (isMobileViewport()) {
+        const win = useWindowStore.getState().windows[windowId];
+        if (win) {
+          const clamped = clampWindowToViewport(
+            { ...win, x: nextX, y: nextY },
+            window.innerWidth,
+            window.innerHeight
+          );
+          nextX = clamped.x;
+          nextY = clamped.y;
+        }
+      }
+
+      moveWindow(windowId, nextX, nextY);
     },
     [windowId, moveWindow]
   );

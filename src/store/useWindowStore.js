@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import * as wm from '../core/windowManager/windowManager';
 import { getApp } from '../core/appRuntime/appRegistry';
+import { isMobileViewport, getMobileWindowBounds } from '../core/windowManager/mobileLayout';
 
 export const useWindowStore = create((set, get) => ({
   ...wm.createInitialState(),
@@ -21,9 +22,22 @@ export const useWindowStore = create((set, get) => ({
       }
     }
 
+    // On mobile, position/size new windows to fit the viewport instead of
+    // inheriting desktop-oriented default bounds. Explicit `options` (if any
+    // caller ever passes them) still win over the computed mobile bounds.
+    let finalOptions = options;
+    if (typeof window !== 'undefined' && isMobileViewport()) {
+      const mobileBounds = getMobileWindowBounds({
+        manifest,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      });
+      finalOptions = { ...mobileBounds, ...options };
+    }
+
     let newId = null;
     set((state) => {
-      const next = wm.openWindow(state, manifest, options);
+      const next = wm.openWindow(state, manifest, finalOptions);
       newId = next.focusedId;
       return next;
     });
@@ -47,6 +61,10 @@ export const useWindowStore = create((set, get) => ({
   moveWindow: (id, x, y) => set((state) => wm.moveWindow(state, id, x, y)),
 
   resizeWindow: (id, bounds) => set((state) => wm.resizeWindow(state, id, bounds)),
+
+  /** Clamps all windows into the given viewport (mobile resize/orientation-change guard). */
+  clampToViewport: (viewportWidth, viewportHeight, dockReserve) =>
+    set((state) => wm.clampWindowsToViewport(state, viewportWidth, viewportHeight, dockReserve)),
 }));
 
 // --- Selectors -------------------------------------------------------------

@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { TRACKS } from './tracks';
 import { MusicEngine } from './MusicEngine';
-import Visualizer from './Visualizer';
+import Disk from './Disk';
 
+/**
+ * Music UI — a simple pixel-art record player. The audio engine and its
+ * lifecycle are UNCHANGED from before this phase: the engine is created
+ * once per mount, kept alive across minimize (the window stays mounted
+ * while minimized — see WindowFrame), and disposed on close/unmount. This
+ * phase only changes what's rendered.
+ */
 export default function MusicApp() {
   const engineRef = useRef(null);
   if (!engineRef.current) engineRef.current = new MusicEngine();
 
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
 
   const track = TRACKS[trackIndex];
 
@@ -59,72 +65,37 @@ export default function MusicApp() {
     }
   };
 
-  const skip = (delta) => {
-    void playTrack(trackIndex + delta);
-  };
-
-  const handleVolume = (value) => {
-    setVolume(value);
-    engineRef.current.setVolume(value);
-  };
-
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex flex-col items-center gap-2 border-b-2 border-os-border px-4 py-4">
-        <span className="font-display text-[12px] text-os-ink">{track.title}</span>
-        <span className="text-[11px] text-os-ink-soft">{track.mood}</span>
-        <Visualizer engine={engineRef.current} isPlaying={isPlaying} />
-      </div>
+    <div className="flex h-full flex-col items-center gap-3 overflow-auto p-4">
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-4">
+        <Disk size="min(56%, 190px)" spinning={isPlaying} active />
 
-      <div className="flex items-center justify-center gap-4 py-3">
+        <span className="max-w-full truncate px-2 text-center font-display text-[13px] text-os-ink">
+          {track.title}
+        </span>
+
         <button
-          onClick={() => skip(-1)}
-          className="rounded-full p-2 text-os-ink-soft hover:bg-os-surface-2 hover:text-os-ink"
-          aria-label="Previous track"
-        >
-          <SkipBack size={16} />
-        </button>
-        <button
+          type="button"
           onClick={togglePlay}
-          className="pixel-cut flex h-11 w-11 items-center justify-center border-2 border-os-border-strong bg-os-accent text-os-accent-ink hover:-translate-y-0.5"
+          className="pixel-cut flex h-14 w-14 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-accent text-os-accent-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
           aria-label={isPlaying ? 'Pause' : 'Play'}
         >
-          {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-        </button>
-        <button
-          onClick={() => skip(1)}
-          className="rounded-full p-2 text-os-ink-soft hover:bg-os-surface-2 hover:text-os-ink"
-          aria-label="Next track"
-        >
-          <SkipForward size={16} />
+          {isPlaying ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
         </button>
       </div>
 
-      <div className="flex items-center gap-2 px-4 pb-2">
-        {volume === 0 ? <VolumeX size={14} className="text-os-ink-soft" /> : <Volume2 size={14} className="text-os-ink-soft" />}
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => handleVolume(Number(e.target.value))}
-          className="flex-1 accent-os-accent"
-          aria-label="Volume"
-        />
-      </div>
-
-      <div className="flex-1 overflow-auto border-t-2 border-os-border p-2">
+      <div className="flex w-full shrink-0 flex-wrap items-center justify-center gap-2.5 border-t-2 border-os-border pt-3">
         {TRACKS.map((t, i) => (
           <button
             key={t.id}
+            type="button"
             onClick={() => void playTrack(i)}
-            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-[12px] ${
-              i === trackIndex ? 'bg-os-accent text-os-accent-ink' : 'text-os-ink hover:bg-os-surface-2'
-            }`}
+            className="rounded-full transition-transform hover:-translate-y-0.5 active:translate-y-0"
+            aria-label={t.title}
+            aria-current={i === trackIndex ? 'true' : undefined}
+            title={t.title}
           >
-            <span>{t.title}</span>
-            <span className="text-[10px] opacity-70">MP3</span>
+            <Disk size={44} active={i === trackIndex} />
           </button>
         ))}
       </div>
