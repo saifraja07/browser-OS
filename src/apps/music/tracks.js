@@ -1,64 +1,40 @@
+/**
+ * Real music files served from Vite's public directory.
+ *
+ * Put your MP3 files in:
+ *   public/music/
+ *
+ * The `src` values below are public URLs, so they must start with /music/.
+ */
 export const TRACKS = [
   {
-    id: 'pixel-dawn',
-    title: 'Pixel Dawn',
-    mood: 'Bright arpeggio',
-    bpm: 108,
-    wave: 'square',
-    sequence: [
-      { notes: ['C4'], beats: 0.5 }, { notes: ['E4'], beats: 0.5 },
-      { notes: ['G4'], beats: 0.5 }, { notes: ['C5'], beats: 0.5 },
-      { notes: ['G4'], beats: 0.5 }, { notes: ['E4'], beats: 0.5 },
-      { notes: ['F4'], beats: 0.5 }, { notes: ['A4'], beats: 0.5 },
-      { notes: ['C5'], beats: 0.5 }, { notes: ['A4'], beats: 0.5 },
-      { notes: ['F4'], beats: 0.5 }, { notes: ['D4'], beats: 0.5 },
-      { notes: ['G4'], beats: 0.5 }, { notes: ['B4'], beats: 0.5 },
-      { notes: ['D5'], beats: 1.0 },
-    ],
+    id: 'track-01',
+    title: 'We Three',
+    mood: 'Your first track',
+    src: '/music/We Three.mp3',
   },
   {
-    id: 'neon-alley',
-    title: 'Neon Alley',
-    mood: 'Moody minor',
-    bpm: 90,
-    wave: 'sawtooth',
-    sequence: [
-      { notes: ['A3'], beats: 1 }, { notes: ['C4'], beats: 1 },
-      { notes: ['E4'], beats: 1 }, { notes: ['A4'], beats: 1 },
-      { notes: ['G3'], beats: 1 }, { notes: ['C4'], beats: 1 },
-      { notes: ['E4'], beats: 1 }, { notes: ['G4'], beats: 1 },
-      { notes: ['F3'], beats: 1 }, { notes: ['A3'], beats: 1 },
-      { notes: ['C4'], beats: 1 }, { notes: ['F4'], beats: 1 },
-      { notes: ['E3'], beats: 2 }, { notes: ['A4', 'E4'], beats: 2 },
-    ],
+    id: 'track-02',
+    title: 'Address Unknown',
+    mood: 'Your second track',
+    src: '/music/Address Unknown.mp3',
   },
   {
-    id: 'eight-bit-sprint',
-    title: '8-Bit Sprint',
-    mood: 'Fast & driving',
-    bpm: 150,
-    wave: 'square',
-    sequence: [
-      { notes: ['E4'], beats: 0.25 }, { notes: ['E4'], beats: 0.25 },
-      { notes: ['G4'], beats: 0.25 }, { notes: ['E4'], beats: 0.25 },
-      { notes: ['D4'], beats: 0.25 }, { notes: ['D4'], beats: 0.25 },
-      { notes: ['F4'], beats: 0.25 }, { notes: ['D4'], beats: 0.25 },
-      { notes: ['C4'], beats: 0.25 }, { notes: ['C4'], beats: 0.25 },
-      { notes: ['E4'], beats: 0.25 }, { notes: ['C4'], beats: 0.25 },
-      { notes: ['G3'], beats: 0.5 }, { notes: ['C4'], beats: 0.5 },
-    ],
+    id: 'track-03',
+    title: 'Ink Spots',
+    mood: 'Your third track',
+    src: '/music/Ink Spots.mp3',
   },
   {
-    id: 'lofi-loop',
-    title: 'Lo-Fi Loop',
-    mood: 'Slow & warm',
-    bpm: 70,
-    wave: 'triangle',
-    sequence: [
-      { notes: ['C4', 'E4', 'G4'], beats: 2 },
-      { notes: ['A3', 'C4', 'E4'], beats: 2 },
-      { notes: ['F3', 'A3', 'C4'], beats: 2 },
-      { notes: ['G3', 'B3', 'D4'], beats: 2 },
-    ],
+    id: 'track-04',
+    title: 'Baby Blue',
+    mood: 'Your fourth track',
+    src: '/music/Baby Blue.mp3',
+  },
+  {
+    id: 'track-05',
+    title: 'Something Stupid',
+    mood: 'Your fifth track',
+    src: '/music/Something Stupid.mp3',
   },
 ];

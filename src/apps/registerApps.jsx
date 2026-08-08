@@ -1,11 +1,12 @@
-import { Info, Calculator as CalculatorIcon, FolderOpen, TerminalSquare, Settings as SettingsIcon, Image, BookOpen, CalendarDays, Music2, MessageCircle } from 'lucide-react';
+import React from 'react';
+import { AppIcon } from '../assets/appIcons';
 import { registerApps } from '../core/appRuntime/appRegistry';
 
 registerApps([
   {
     id: 'about',
-    title: 'About BrowserOS',
-    icon: Info,
+    title: 'BrowserOS Info',
+    icon: (props) => <AppIcon appId="about" {...props} />,
     component: () => import('./about/AboutApp'),
     defaultSize: { width: 420, height: 260 },
     minSize: { width: 300, height: 180 },
@@ -14,34 +15,35 @@ registerApps([
   {
     id: 'calculator',
     title: 'Calculator',
-    icon: CalculatorIcon,
+    icon: (props) => <AppIcon appId="calculator" {...props} />,
     component: () => import('./calculator/CalculatorApp'),
     defaultSize: { width: 300, height: 420 },
     minSize: { width: 260, height: 360 },
     resizable: false,
+    singleInstance: true,
   },
   {
     id: 'explorer',
     title: 'Explorer',
-    icon: FolderOpen,
+    icon: (props) => <AppIcon appId="explorer" {...props} />,
     component: () => import('./explorer/ExplorerApp'),
     defaultSize: { width: 620, height: 440 },
     minSize: { width: 380, height: 280 },
-    // Multi-instance: each window keeps its own path/history via local state.
+    singleInstance: true,
   },
   {
     id: 'terminal',
     title: 'Terminal',
-    icon: TerminalSquare,
+    icon: (props) => <AppIcon appId="terminal" {...props} />,
     component: () => import('./terminal/TerminalApp'),
     defaultSize: { width: 560, height: 380 },
     minSize: { width: 340, height: 220 },
-    // Multi-instance: each window keeps its own cwd/history via local state.
+    singleInstance: true,
   },
   {
     id: 'settings',
     title: 'Settings',
-    icon: SettingsIcon,
+    icon: (props) => <AppIcon appId="settings" {...props} />,
     component: () => import('./settings/SettingsApp'),
     defaultSize: { width: 460, height: 380 },
     minSize: { width: 400, height: 320 },
@@ -50,7 +52,7 @@ registerApps([
   {
     id: 'wallpaper',
     title: 'Wallpaper',
-    icon: Image,
+    icon: (props) => <AppIcon appId="wallpaper" {...props} />,
     component: () => import('./wallpaper/WallpaperApp'),
     defaultSize: { width: 420, height: 380 },
     minSize: { width: 340, height: 300 },
@@ -59,7 +61,7 @@ registerApps([
   {
     id: 'readme',
     title: 'README',
-    icon: BookOpen,
+    icon: (props) => <AppIcon appId="readme" {...props} />,
     component: () => import('./readme/ReadmeApp'),
     defaultSize: { width: 480, height: 460 },
     minSize: { width: 340, height: 300 },
@@ -68,7 +70,7 @@ registerApps([
   {
     id: 'calendar',
     title: 'Calendar',
-    icon: CalendarDays,
+    icon: (props) => <AppIcon appId="calendar" {...props} />,
     component: () => import('./calendar/CalendarApp'),
     defaultSize: { width: 340, height: 520 },
     minSize: { width: 300, height: 440 },
@@ -77,7 +79,7 @@ registerApps([
   {
     id: 'music',
     title: 'Music',
-    icon: Music2,
+    icon: (props) => <AppIcon appId="music" {...props} />,
     component: () => import('./music/MusicApp'),
     defaultSize: { width: 320, height: 480 },
     minSize: { width: 280, height: 420 },
@@ -87,7 +89,7 @@ registerApps([
   {
     id: 'messages',
     title: 'Messages',
-    icon: MessageCircle,
+    icon: (props) => <AppIcon appId="messages" {...props} />,
     component: () => import('./messages/MessagesApp'),
     defaultSize: { width: 460, height: 440 },
     minSize: { width: 380, height: 340 },

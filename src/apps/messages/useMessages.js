@@ -1,16 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { virtualFS } from '../../core/filesystem/virtualFS';
 import { notify } from '../../store/useNotificationStore';
-import { randomReply } from './contacts';
+import { CONTACTS, randomReply } from './contacts';
 
 const MESSAGES_PATH = '/System/messages.json';
 let idCounter = 0;
 const generateId = () => `msg_${Date.now()}_${idCounter++}`;
 
+function createSeedThreads() {
+  return Object.fromEntries(
+    CONTACTS.map((contact) => [
+      contact.id,
+      (contact.initialMessages ?? []).map((message) => ({
+        ...message,
+        id: generateId(),
+      })),
+    ])
+  );
+}
+
 export function useMessages() {
   const [threadsByContact, setThreadsByContact] = useState({});
   const [loading, setLoading] = useState(true);
-  const [typingContactId, setTypingContactId] = useState(null);
   const threadsRef = useRef(threadsByContact);
   threadsRef.current = threadsByContact;
 
@@ -19,14 +30,19 @@ export function useMessages() {
     (async () => {
       if (!(await virtualFS.exists(MESSAGES_PATH))) {
         await virtualFS.mkdir('/System', { recursive: true });
-        await virtualFS.writeFile(MESSAGES_PATH, '{}');
+        await virtualFS.writeFile(MESSAGES_PATH, JSON.stringify(createSeedThreads(), null, 2));
       }
+
       const raw = await virtualFS.readFile(MESSAGES_PATH);
       if (!cancelled) {
         try {
-          setThreadsByContact(JSON.parse(raw));
+          const parsed = JSON.parse(raw);
+          const seeded = createSeedThreads();
+          // Add newly introduced contacts without destroying existing local threads.
+          const merged = { ...seeded, ...parsed };
+          setThreadsByContact(merged);
         } catch {
-          setThreadsByContact({});
+          setThreadsByContact(createSeedThreads());
         }
         setLoading(false);
       }
@@ -56,16 +72,21 @@ export function useMessages() {
     (contactId, text, contactName) => {
       appendMessage(contactId, { id: generateId(), from: 'me', text, ts: Date.now() });
 
-      setTypingContactId(contactId);
-      const delay = 900 + Math.random() * 1200;
-      setTimeout(() => {
-        appendMessage(contactId, { id: generateId(), from: 'them', text: randomReply(), ts: Date.now() });
-        setTypingContactId((current) => (current === contactId ? null : current));
+      // The app is intentionally non-typing: a canned response arrives after a
+      // short delay, keeping the interaction playful without a free-form chat box.
+      const delay = 650 + Math.random() * 900;
+      window.setTimeout(() => {
+        appendMessage(contactId, {
+          id: generateId(),
+          from: 'them',
+          text: randomReply(contactId),
+          ts: Date.now(),
+        });
         notify({ title: contactName, message: 'New message' });
       }, delay);
     },
     [appendMessage]
   );
 
-  return { threadsByContact, loading, typingContactId, sendMessage };
+  return { threadsByContact, loading, sendMessage };
 }

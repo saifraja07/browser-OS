@@ -27,6 +27,42 @@
 
   --shadow-os-window: 0 12px 0 rgba(43, 36, 56, 0.14), 0 18px 30px rgba(43, 36, 56, 0.22);
   --shadow-os-window-focused: 0 12px 0 rgba(255, 139, 94, 0.35), 0 20px 34px rgba(43, 36, 56, 0.3);
+
+  /* Theme geometry */
+  --os-titlebar-height: 36px;
+  --os-dock-height: 64px;
+  --os-dock-gap: 10px;
+  --os-icon-size: 44px;
+  --os-icon-radius: 8px;
+  --os-ui-opacity: 0.94;
+}
+
+/*
+ * Shape/texture tokens are theme-driven but aren't Tailwind color tokens, so
+ * they live in a plain :root block rather than @theme. The Theme Engine
+ * overwrites these (as inline styles, which win over this stylesheet rule)
+ * before the first paint — see main.jsx — so this block only exists as a
+ * safety-net default.
+ */
+:root {
+  --os-radius-window: 16px;
+  --os-radius-sm: 10px;
+  --os-border-width: 2px;
+  --os-clip-corner: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+  --os-window-texture: none;
+  --os-window-texture-size: auto;
+  --os-display-tracking: 0.05em;
+  --os-titlebar-height: 36px;
+  --os-dock-height: 64px;
+  --os-dock-gap: 10px;
+  --os-icon-size: 44px;
+  --os-icon-radius: 8px;
+  --os-ui-opacity: 0.94;
 }
 
 html,
@@ -44,12 +80,62 @@ body {
 
 /* Pixel-cut corner utility — the signature "stepped" edge used on window
    controls and dock chrome, standing in for both mac's circular traffic
-   lights and Windows' plain squares. */
+   lights and Windows' plain squares. The notch size (and whether there's a
+   notch at all) is theme-driven via --os-clip-corner, so every theme gets
+   a genuinely different silhouette here, not just different colors. */
 .pixel-cut {
-  clip-path: polygon(
-    0 4px, 4px 4px, 4px 0,
-    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
-    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
-  );
+  clip-path: var(--os-clip-corner);
+}
+
+
+/* Shared retro-OS details. These are deliberately token driven so each theme
+   can change the silhouette without component-specific CSS forks. */
+::selection {
+  background: var(--color-os-accent);
+  color: var(--color-os-accent-ink);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-os-accent);
+  outline-offset: 2px;
+}
+
+.os-retro-texture {
+  background-image: var(--os-window-texture);
+  background-size: var(--os-window-texture-size);
+}
+
+.os-dock {
+  min-height: var(--os-dock-height);
+}
+
+.os-icon-shell {
+  width: var(--os-icon-size);
+  height: var(--os-icon-size);
+  border-radius: var(--os-icon-radius);
+}
+
+/* Dock interaction: icons feel physical while keeping the pixel shell crisp. */
+.os-dock .group:hover .os-icon-shell {
+  filter: saturate(1.08) contrast(1.04);
+}
+
+/* Compact retro scrollbars used by long message lists and other apps. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-os-border-strong) var(--color-os-surface-2);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-os-surface-2);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-os-border-strong);
+  border: 2px solid var(--color-os-surface-2);
 }

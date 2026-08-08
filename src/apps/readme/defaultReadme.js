@@ -5,7 +5,7 @@ A retro-inspired desktop that lives entirely in your browser. Nothing here touch
 ## Getting around
 
 - **Drag** any window by its title bar. **Resize** from an edge or corner.
-- Right-click the **desktop** for quick actions.
+- Double-click desktop icons to launch apps, or use the Dock at the bottom.
 - The **Dock** at the bottom launches apps and shows what's running.
 - Open **Settings** to change the theme, and **Wallpaper** to change the background pattern.
 

@@ -9,7 +9,7 @@
  * {
  *   id: string,              // unique app id, e.g. "terminal"
  *   title: string,           // display name
- *   icon: React.ComponentType | string, // lucide icon component or asset path
+ *   icon: React.ComponentType | string, // app-specific icon component or asset path
  *   component: () => Promise<{ default: React.ComponentType }>, // lazy import
  *   defaultSize: { width, height },
  *   minSize: { width, height },

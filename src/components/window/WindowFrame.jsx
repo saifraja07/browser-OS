@@ -29,7 +29,7 @@ function WindowFrame({ id }) {
     return lazy(manifest.component);
   }, [manifest]);
 
-  if (!win || win.isMinimized) return null;
+  if (!win) return null;
 
   const workspaceBounds = { x: 8, y: 8, width: window.innerWidth - 16, height: window.innerHeight - 96 };
 
@@ -53,12 +53,14 @@ function WindowFrame({ id }) {
         width: win.width,
         height: win.height,
         zIndex: win.zIndex,
+        display: win.isMinimized ? 'none' : undefined,
         boxShadow: isFocused ? 'var(--shadow-os-window-focused)' : 'var(--shadow-os-window)',
       }}
-      className="flex flex-col overflow-hidden rounded-2xl border-2 border-os-border-strong bg-os-surface"
+      className="relative flex flex-col overflow-hidden rounded-[var(--os-radius-window)] border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface transition-[border-radius,border-width] duration-200"
     >
       <TitleBar
         title={win.title}
+        appId={win.appId}
         isFocused={isFocused}
         isMaximized={win.isMaximized}
         onPointerDown={onPointerDown}
@@ -80,6 +82,15 @@ function WindowFrame({ id }) {
       </div>
 
       <ResizeHandles windowId={id} resizable={win.resizable && !win.isMaximized} />
+
+      {/* Theme-driven texture overlay (scanlines/dither/etc). Purely decorative:
+          non-interactive and defaults to `none`, so themes without a texture
+          render nothing here. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{ backgroundImage: 'var(--os-window-texture)', backgroundSize: 'var(--os-window-texture-size)' }}
+      />
     </motion.div>
   );
 }
