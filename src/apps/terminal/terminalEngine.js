@@ -21,7 +21,8 @@ export async function executeLine(line, ctx) {
   const trimmed = line.trim();
   if (!trimmed) return { lines: [], isError: false };
 
-  const [name, ...args] = tokenize(trimmed);
+  const [rawName, ...args] = tokenize(trimmed);
+  const name = rawName.toLowerCase();
   const command = COMMANDS[name];
 
   if (!command) {

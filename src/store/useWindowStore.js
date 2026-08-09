@@ -46,6 +46,18 @@ export const useWindowStore = create((set, get) => ({
 
   closeWindow: (id) => set((state) => wm.closeWindow(state, id)),
 
+  /** Closes the currently open window for an app id. Useful for app-level
+   * commands such as the Terminal's `exit`, without exposing window ids to
+   * the app itself. */
+  closeApp: (appId) => {
+    const windows = get().windows;
+    const target = Object.values(windows).find((win) => win.appId === appId);
+    if (!target) return false;
+
+    set((state) => wm.closeWindow(state, target.id));
+    return true;
+  },
+
   focusWindow: (id) => set((state) => wm.focusWindow(state, id)),
 
   minimizeWindow: (id) => set((state) => wm.minimizeWindow(state, id)),

@@ -22,6 +22,7 @@ export default function TerminalApp() {
   const scrollRef = useRef(null);
 
   const openApp = useWindowStore((s) => s.openApp);
+  const closeApp = useWindowStore((s) => s.closeApp);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -34,6 +35,7 @@ export default function TerminalApp() {
     fs: virtualFS,
     setCwd,
     openApp,
+    closeApp,
     listApps: getAllApps,
     clear: () => setLines([]),
   });
