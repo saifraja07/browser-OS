@@ -6,13 +6,25 @@ import ThreadView from './ThreadView';
 
 export default function MessagesApp() {
   const [selectedId, setSelectedId] = useState(null);
-  const { threadsByContact, loading, sendMessage } = useMessages();
+
+  const {
+    threadsByContact,
+    progressByContact,
+    pendingContactId,
+    loading,
+    sendMessage,
+  } = useMessages();
 
   const contact = CONTACTS.find((item) => item.id === selectedId);
   const messages = selectedId ? threadsByContact[selectedId] ?? [] : [];
+  const progress = selectedId ? progressByContact[selectedId] ?? 0 : 0;
 
   if (loading) {
-    return <div className="flex h-full items-center justify-center font-mono text-xs text-os-ink-soft">loading…</div>;
+    return (
+      <div className="flex h-full items-center justify-center font-mono text-xs text-os-ink-soft">
+        loading…
+      </div>
+    );
   }
 
   if (!contact) {
@@ -32,8 +44,12 @@ export default function MessagesApp() {
     <ThreadView
       contact={contact}
       messages={messages}
+      progress={progress}
+      pending={pendingContactId === selectedId}
       onBack={() => setSelectedId(null)}
-      onSend={(text) => sendMessage(selectedId, text, contact.name)}
+      onSend={(optionIndex) =>
+        sendMessage(selectedId, optionIndex, contact.name)
+      }
     />
   );
 }

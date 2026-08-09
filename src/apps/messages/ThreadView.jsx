@@ -1,9 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { getConversationStep } from './contacts';
 
 function formatTime(ts) {
-  return new Date(ts).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  return new Date(ts).toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 function formatDay(ts) {
@@ -14,12 +18,26 @@ function formatDay(ts) {
   }).toUpperCase();
 }
 
-export default function ThreadView({ contact, messages, onSend, onBack }) {
+export default function ThreadView({
+  contact,
+  messages,
+  progress,
+  pending,
+  onSend,
+  onBack,
+}) {
   const scrollRef = useRef(null);
 
+  const currentStep = getConversationStep(contact.id, progress);
+  const conversationEnded =
+    !currentStep || progress >= contact.conversation.length;
+
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [messages, pending]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-os-surface text-os-ink">
@@ -41,8 +59,12 @@ export default function ThreadView({ contact, messages, onSend, onBack }) {
           >
             {contact.avatar}
           </span>
-          <span className="font-display text-[11px] text-os-ink">{contact.name}</span>
-          <span className="font-mono text-[8px] text-os-ink-soft">{contact.tagline}</span>
+          <span className="font-display text-[11px] text-os-ink">
+            {contact.name}
+          </span>
+          <span className="font-mono text-[8px] text-os-ink-soft">
+            {contact.tagline}
+          </span>
         </div>
       </div>
 
@@ -51,7 +73,10 @@ export default function ThreadView({ contact, messages, onSend, onBack }) {
           <AnimatePresence initial={false}>
             {messages.map((message, index) => {
               const previous = messages[index - 1];
-              const showDay = !previous || formatDay(previous.ts) !== formatDay(message.ts);
+              const showDay =
+                !previous ||
+                formatDay(previous.ts) !== formatDay(message.ts);
+
               return (
                 <div key={message.id}>
                   {showDay && (
@@ -59,10 +84,15 @@ export default function ThreadView({ contact, messages, onSend, onBack }) {
                       {formatDay(message.ts)} @ {formatTime(message.ts)}
                     </div>
                   )}
+
                   <motion.div
                     initial={{ opacity: 0, y: 6, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    className={`flex ${message.from === 'me' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${
+                      message.from === 'me'
+                        ? 'justify-end'
+                        : 'justify-start'
+                    }`}
                   >
                     <div
                       className={`max-w-[82%] rounded-[14px] border-2 border-os-border-strong px-3 py-2 font-mono text-[10px] leading-[1.45] shadow-[0_2px_0_rgba(0,0,0,.08)] ${
@@ -78,27 +108,48 @@ export default function ThreadView({ contact, messages, onSend, onBack }) {
               );
             })}
           </AnimatePresence>
+
+          {pending && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
+              <div className="rounded-[14px] rounded-bl-sm border-2 border-os-border-strong bg-os-surface-2 px-3 py-2 font-mono text-[10px] text-os-ink-soft shadow-[0_2px_0_rgba(0,0,0,.08)]"
+              >
+                …
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 
       <div className="border-t-2 border-os-border bg-os-surface-2 p-2">
-        <div className="mb-2 flex gap-1.5 overflow-x-auto pb-0.5">
-          {contact.replyOptions.map((reply) => (
-            <button
-              key={reply}
-              type="button"
-              onClick={() => onSend(reply)}
-              className="shrink-0 rounded-full border-2 border-os-border-strong bg-os-surface px-2.5 py-1 font-mono text-[9px] text-os-ink shadow-[0_2px_0_rgba(0,0,0,.1)] transition-all hover:-translate-y-0.5 hover:bg-os-accent hover:text-os-accent-ink active:translate-y-0"
-            >
-              {reply}
-            </button>
-          ))}
-        </div>
+        {conversationEnded ? (
+          <div className="flex h-9 items-center justify-center rounded-full border-2 border-os-border-strong bg-os-surface px-3 font-mono text-[9px] uppercase tracking-[0.12em] text-os-ink-soft">
+            Conversation ended
+          </div>
+        ) : (
+          <>
+            <div className="mb-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-os-ink-soft">
+              {pending ? 'Waiting for a reply…' : 'Choose a reply'}
+            </div>
 
-        <div className="flex h-8 items-center justify-between rounded-full border-2 border-os-border-strong bg-os-surface px-3 font-mono text-[9px] text-os-ink-soft shadow-[inset_0_1px_0_rgba(255,255,255,.5)]">
-          <span>Choose a reply</span>
-          <span aria-hidden="true">↑</span>
-        </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {currentStep.options.map((option, index) => (
+                <button
+                  key={`${progress}-${option.text}`}
+                  type="button"
+                  disabled={pending}
+                  onClick={() => onSend(index)}
+                  className="min-w-0 rounded-[12px] border-2 border-os-border-strong bg-os-surface px-2.5 py-2 text-left font-mono text-[9px] leading-[1.35] text-os-ink shadow-[0_2px_0_rgba(0,0,0,.1)] transition-all hover:-translate-y-0.5 hover:bg-os-accent hover:text-os-accent-ink active:translate-y-0 disabled:cursor-wait disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-os-surface disabled:hover:text-os-ink"
+                >
+                  {option.text}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
