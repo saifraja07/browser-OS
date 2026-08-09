@@ -7,10 +7,12 @@ import {
   ICON_SIZE,
   ICON_SIZE_MOBILE,
   DESKTOP_PADDING,
+  DESKTOP_ICON_TOP_RESERVE,
   DOCK_RESERVE_HEIGHT,
   MOBILE_BREAKPOINT,
   MOBILE_DOCK_HEIGHT,
 } from './constants';
+import { NAVBAR_HEIGHT } from '../windowManager/constants';
 
 function isMobileViewport() {
   return typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT;
@@ -39,9 +41,16 @@ export function clampToDesktop(x, y) {
   const dockReserve = getDockReserveHeight();
   const maxX = Math.max(DESKTOP_PADDING, window.innerWidth - size.width - DESKTOP_PADDING);
   const maxY = Math.max(DESKTOP_PADDING, window.innerHeight - size.height - dockReserve);
+
+  // Shortcuts may move freely left/right and downward, but never above
+  // the protected shortcut-row area directly below the navbar. This keeps
+  // dragged icons from crossing into the initial README/Music/Calculator
+  // row on both desktop and mobile.
+  const minY = NAVBAR_HEIGHT + DESKTOP_PADDING + DESKTOP_ICON_TOP_RESERVE;
+
   return {
     x: Math.min(Math.max(x, DESKTOP_PADDING), maxX),
-    y: Math.min(Math.max(y, DESKTOP_PADDING), maxY),
+    y: Math.min(Math.max(y, minY), maxY),
   };
 }
 

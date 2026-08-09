@@ -133,7 +133,6 @@ export default function ExplorerApp() {
                 entry={entry}
                 isSelected={selectedName === entry.name}
                 isRenaming={renamingName === entry.name}
-                onSelect={(e) => setSelectedName(e.name)}
                 onOpen={openEntry}
                 onContextMenu={handleRowContextMenu}
                 onRenameCommit={async (newName) => {

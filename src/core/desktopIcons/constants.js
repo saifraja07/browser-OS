@@ -16,6 +16,8 @@ export const ICON_SIZE_MOBILE = { width: 58, height: 72 };
 
 /** Keep icons clear of screen edges and the dock. */
 export const DESKTOP_PADDING = 20;
+/** Extra breathing room below the navbar before desktop shortcuts may be dragged. */
+export const DESKTOP_ICON_TOP_RESERVE = 12;
 export const DOCK_RESERVE_HEIGHT = 104;
 
 /** Reuse the Window Manager's mobile breakpoint/dock reserve so every part of the OS agrees on what "mobile" means. */

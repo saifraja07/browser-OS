@@ -11,7 +11,6 @@ export default function FileRow({
   entry,
   isSelected,
   isRenaming,
-  onSelect,
   onOpen,
   onContextMenu,
   onRenameCommit,
@@ -39,8 +38,7 @@ export default function FileRow({
 
   return (
     <div
-      onClick={() => onSelect(entry)}
-      onDoubleClick={() => !isRenaming && onOpen(entry)}
+      onClick={() => !isRenaming && onOpen(entry)}
       onContextMenu={(e) => onContextMenu(e, entry)}
       className={`flex cursor-default items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] ${
         isSelected ? 'bg-os-accent text-os-accent-ink' : 'text-os-ink hover:bg-os-surface-2'

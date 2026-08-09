@@ -8,7 +8,7 @@ import { create } from 'zustand';
  * manager tracks a single focused window.
  */
 export const useSystemBarStore = create((set) => ({
-  /** null | 'browseros' | 'wifi' | 'battery' | 'time' */
+  /** null | 'browseros' | 'wifi' | 'battery' | 'time' | 'system-info' | 'licenses' | 'shutdown' | 'clear-site-data-confirm' */
   activeMenu: null,
 
   toggleMenu: (id) => set((state) => ({ activeMenu: state.activeMenu === id ? null : id })),

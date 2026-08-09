@@ -18,6 +18,7 @@ export default function BrowserOSMenu({ onShutDown }) {
   const isSystemInfoOpen = activeMenu === "system-info";
   const isLicensesOpen = activeMenu === "licenses";
   const isClearSiteDataOpen = activeMenu === "clear-site-data-confirm";
+  const isShutDownOpen = activeMenu === "shutdown";
   const toggleMenu = useSystemBarStore((s) => s.toggleMenu);
   const closeMenu = useSystemBarStore((s) => s.closeMenu);
   const openApp = useWindowStore((s) => s.openApp);
@@ -26,7 +27,7 @@ export default function BrowserOSMenu({ onShutDown }) {
   useCloseOnOutside(
     ref,
     activeMenu !== null &&
-      (isOpen || isSystemInfoOpen || isLicensesOpen || isClearSiteDataOpen),
+      (isOpen || isSystemInfoOpen || isLicensesOpen || isClearSiteDataOpen || isShutDownOpen),
     closeMenu,
   );
 
@@ -46,6 +47,15 @@ export default function BrowserOSMenu({ onShutDown }) {
   const handleClearSiteData = async () => {
     await clearSiteData();
     window.location.reload();
+  };
+
+  const openShutDownConfirmation = () => {
+    toggleMenu("shutdown");
+  };
+
+  const handleProceedShutdown = () => {
+    closeMenu();
+    onShutDown();
   };
 
   const items = [
@@ -115,7 +125,7 @@ export default function BrowserOSMenu({ onShutDown }) {
             <button
               type="button"
               role="menuitem"
-              onClick={() => runAndClose(onShutDown)}
+              onClick={openShutDownConfirmation}
               className="flex w-full items-center px-3 py-1.5 text-left font-body text-[12.5px]   hover:bg-os-danger hover:text-os-surface"
             >
               Shut Down
@@ -167,6 +177,27 @@ export default function BrowserOSMenu({ onShutDown }) {
               learning, experimentation, and building a desktop-like experience
               on the web. All rights reserved.
             </p>
+          </SystemPanel>
+        )}
+
+        {isShutDownOpen && (
+          <SystemPanel
+            title="Shut Down"
+            onClose={closeMenu}
+            className="absolute left-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+          >
+            <p className="leading-5">
+              Shut down functionality is disabled in this demo.
+            </p>
+            <div className="mt-3 flex justify-start">
+              <button
+                type="button"
+                onClick={handleProceedShutdown}
+                className="border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface px-3 py-1.5 font-body text-[11px] text-os-ink hover:bg-os-ink hover:text-os-surface"
+              >
+                Proceed Anyway
+              </button>
+            </div>
           </SystemPanel>
         )}
 
