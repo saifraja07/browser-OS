@@ -59,3 +59,16 @@ export async function __clearAll() {
   const db = await getDb();
   await db.clear(NODE_STORE);
 }
+
+export async function closeStorageDatabase() {
+  if (dbPromise) {
+    try {
+      const db = await dbPromise;
+      db.close();
+    } catch {
+      // Database may already be unavailable or closed.
+    } finally {
+      dbPromise = null;
+    }
+  }
+}

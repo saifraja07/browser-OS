@@ -232,7 +232,7 @@ export default function CalculatorApp() {
   });
 
   const buttons = [
-    { label: 'C', action: clear, className: 'bg-os-danger text-os-surface' },
+    { label: 'C', action: clear, className: 'bg-os-danger' },
     { label: '⌫', action: backspace },
     { label: '%', action: percent },
     { label: '÷', action: () => pressOperator('÷'), operator: true },
@@ -251,12 +251,12 @@ export default function CalculatorApp() {
     { label: '±', action: toggleSign },
     { label: '0', action: () => pressDigit('0') },
     { label: '.', action: decimal },
-    { label: '=', action: calculate, operator: true, className: 'bg-os-accent text-os-accent-ink' },
+    { label: '=', action: () => calculate(), operator: true, className: 'bg-os-accent text-os-accent-ink' },
   ];
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 p-4 font-mono">
-      <div className="min-h-[88px] rounded-lg border-2 border-os-border-strong bg-os-surface-2 px-3 py-3 text-right shadow-os-window">
+      <div className="min-h-22 rounded-lg border-2 border-os-border-strong bg-os-surface-2 px-3 py-3 text-right shadow-os-window">
         <div className="min-h-5 truncate text-xs text-os-ink-soft">{error ? 'Invalid expression' : expression}</div>
         <div className="mt-1 truncate text-3xl font-semibold text-os-ink">{result}</div>
       </div>
@@ -276,8 +276,6 @@ export default function CalculatorApp() {
       </div>
 
       <div className="flex items-center justify-between text-[10px] text-os-ink-soft">
-        <span>+ − × ÷  •  %  •  ( )</span>
-        <span>Enter = calculate · Esc = clear</span>
       </div>
     </div>
   );

@@ -78,3 +78,16 @@ export async function clearCustomWallpaper() {
     // Non-fatal — worst case the old blob just lingers in IndexedDB unused.
   }
 }
+
+export async function closeCustomWallpaperDatabase() {
+  if (dbPromise) {
+    try {
+      const db = await dbPromise;
+      db.close();
+    } catch {
+      // Database may already be unavailable or closed.
+    } finally {
+      dbPromise = null;
+    }
+  }
+}
