@@ -116,17 +116,6 @@ export function TerminalLogo(props) {
   );
 }
 
-export function WallpaperLogo(props) {
-  return (
-    <PixelSvg {...props}>
-      <rect x="1" y="2" width="14" height="12" fill="currentColor" />
-      <rect x="2" y="3" width="12" height="10" fill="var(--color-os-surface)" />
-      <circle cx="11" cy="5" r="1.5" fill="var(--color-os-accent)" />
-      <path d="M2 11 L6 7 L9 10 L11 8 L14 11 V13 H2 Z" fill="var(--color-os-accent)" />
-    </PixelSvg>
-  );
-}
-
 export function CalendarLogo(props) {
   return (
     <PixelSvg {...props}>

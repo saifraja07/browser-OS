@@ -2,9 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { applyThemeVars, loadPersistedThemeId } from './core/themeEngine/themeEngine'
+import { applyDefaultThemeVars } from './core/themeEngine/themeEngine'
 
-applyThemeVars(loadPersistedThemeId());
+applyDefaultThemeVars();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

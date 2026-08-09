@@ -6,7 +6,6 @@ export const DESKTOP_LOGOS = {
   music: (props) => <AppIcon appId="music" {...props} />,
   settings: (props) => <AppIcon appId="settings" {...props} />,
   terminal: (props) => <AppIcon appId="terminal" {...props} />,
-  wallpaper: (props) => <AppIcon appId="wallpaper" {...props} />,
   calendar: (props) => <AppIcon appId="calendar" {...props} />,
   messages: (props) => <AppIcon appId="messages" {...props} />,
   about: (props) => <AppIcon appId="about" {...props} />,

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { virtualFS } from '../../core/filesystem/virtualFS';
 import { getAllApps } from '../../core/appRuntime/appRegistry';
 import { useWindowStore } from '../../store/useWindowStore';
-import { useThemeStore } from '../../store/useThemeStore';
 import { executeLine } from './terminalEngine';
 
 const WELCOME = [
@@ -21,8 +20,6 @@ export default function TerminalApp() {
   const scrollRef = useRef(null);
 
   const openApp = useWindowStore((s) => s.openApp);
-  const cycleTheme = useThemeStore((s) => s.cycleTheme);
-  const themeId = useThemeStore((s) => s.themeId);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -37,7 +34,6 @@ export default function TerminalApp() {
     openApp,
     listApps: getAllApps,
     clear: () => setLines([]),
-    theme: { cycle: cycleTheme, current: () => themeId },
   });
 
   const runCommand = async (raw) => {

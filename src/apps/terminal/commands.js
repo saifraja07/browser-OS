@@ -9,7 +9,6 @@ import { resolvePath, basename, dirname } from '../../core/filesystem/pathUtils.
  *   openApp(appId),
  *   listApps(): manifest[],
  *   clear(),
- *   theme: { cycle(), current(): id },
  * }
  */
 
@@ -163,15 +162,9 @@ export const COMMANDS = {
   },
 
   theme: {
-    usage: 'theme [next]',
-    description: 'Show or cycle the OS theme',
-    run: async (args, ctx) => {
-      if (args[0] === 'next') {
-        ctx.theme.cycle();
-        return [`Theme: ${ctx.theme.current()}`];
-      }
-      return [`Current theme: ${ctx.theme.current()}`, 'Run "theme next" to cycle.'];
-    },
+    usage: 'theme',
+    description: 'Show the OS theme',
+    run: async () => ['Current theme: Default', 'BrowserOS ships with a single Default theme.'],
   },
 
   whoami: {

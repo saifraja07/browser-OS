@@ -1,4 +1,4 @@
-import { useWallpaperStore, getWallpaper } from '../../store/useWallpaperStore';
+import { useWallpaperStore, getActiveWallpaperSrc } from '../../store/useWallpaperStore';
 import DesktopIcons from './DesktopIcons';
 
 /**
@@ -7,20 +7,19 @@ import DesktopIcons from './DesktopIcons';
  * use the shared context menu where it makes sense (for example Explorer).
  */
 export default function Desktop({ children, isMobile = false }) {
-  const wallpaperId = useWallpaperStore((s) => s.wallpaperId);
-  const wallpaper = getWallpaper(wallpaperId);
+  const wallpaperSrc = useWallpaperStore(getActiveWallpaperSrc);
 
   return (
     <div
       className="relative h-screen w-screen overflow-hidden bg-os-bg"
       style={{
-        backgroundImage: wallpaper.backgroundImage,
-        backgroundSize: wallpaper.backgroundSize,
+        backgroundImage: `url(${wallpaperSrc})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Mobile's primary navigation is the 3-icon dock + All Apps menu,
-          not scattered desktop icons — see MobileDock/MobileAppsMenu. */}
-      {!isMobile && <DesktopIcons />}
+      <DesktopIcons isMobile={isMobile} />
       {children}
     </div>
   );

@@ -7,12 +7,12 @@ A retro-inspired desktop that lives entirely in your browser. Nothing here touch
 - **Drag** any window by its title bar. **Resize** from an edge or corner.
 - Double-click desktop icons to launch apps, or use the Dock at the bottom.
 - The **Dock** at the bottom launches apps and shows what's running.
-- Open **Settings** to change the theme, and **Wallpaper** to change the background pattern.
+- Open **Settings → Appearance** to change the wallpaper, including uploading your own.
 
 ## Terminal cheatsheet
 
 \`\`\`
-ls, cd, pwd, cat, mkdir, touch, rm [-r], mv, echo, open <app>, apps, theme next
+ls, cd, pwd, cat, mkdir, touch, rm [-r], mv, echo, open <app>, apps, theme
 \`\`\`
 
 ## About this file

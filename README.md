@@ -15,8 +15,7 @@ BrowserOS recreates the feel of a lightweight desktop environment directly insid
 - 🖱️ Dock with hover interactions
 - 🗂️ Explorer application
 - 💻 Terminal with predefined commands
-- ⚙️ Settings application
-- 🖼️ Wallpaper application
+- ⚙️ Settings application with built-in + custom wallpaper picker
 - 🎵 Local music player
 - 💬 Predefined Messages application
 - 📅 Calendar
@@ -33,8 +32,7 @@ BrowserOS recreates the feel of a lightweight desktop environment directly insid
 | **Calculator** | Basic calculator |
 | **Explorer** | File/folder explorer interface |
 | **Terminal** | Simulated terminal with predefined commands |
-| **Settings** | System and appearance settings |
-| **Wallpaper** | Wallpaper selection |
+| **Settings** | System and appearance settings, including wallpaper selection/upload |
 | **README** | Built-in documentation |
 | **Calendar** | Calendar interface |
 | **Music** | Local music player |
@@ -66,7 +64,6 @@ browserOS/
 │   │   ├── explorer/
 │   │   ├── terminal/
 │   │   ├── settings/
-│   │   ├── wallpaper/
 │   │   ├── readme/
 │   │   ├── calendar/
 │   │   ├── music/
@@ -224,8 +221,7 @@ Commands should remain simulated and must not execute arbitrary operating-system
 
 The Settings application is intended for lightweight system customization, such as:
 
-- Theme
-- Appearance
+- Appearance (wallpaper selection and custom wallpaper upload — BrowserOS ships a single Default theme)
 - System information
 - BrowserOS configuration
 
@@ -243,7 +239,7 @@ The project follows a desktop/application architecture:
 BrowserOS
 │
 ├── Desktop
-│   ├── Wallpaper
+│   ├── Wallpaper (from Settings → Appearance)
 │   ├── Desktop Icons
 │   └── Dock
 │

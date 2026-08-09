@@ -50,15 +50,6 @@ registerApps([
     singleInstance: true,
   },
   {
-    id: 'wallpaper',
-    title: 'Wallpaper',
-    icon: (props) => <AppIcon appId="wallpaper" {...props} />,
-    component: () => import('./wallpaper/WallpaperApp'),
-    defaultSize: { width: 420, height: 380 },
-    minSize: { width: 340, height: 300 },
-    singleInstance: true,
-  },
-  {
     id: 'readme',
     title: 'README',
     icon: (props) => <AppIcon appId="readme" {...props} />,
