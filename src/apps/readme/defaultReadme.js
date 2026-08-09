@@ -1,25 +1,22 @@
 export const DEFAULT_README = `# Welcome to BrowserOS
 
-A retro-inspired desktop that lives entirely in your browser. Nothing here touches a server — everything you create is stored locally.
+Hey! I'm **Haadi**, a developer who enjoys building things that are a little different.
 
-## Getting around
+I created **BrowserOS** as a fun experiment to bring the feeling of a desktop operating system into the browser. I wanted to explore what could be built with a web app while keeping it simple, interactive, and enjoyable to use.
 
-- **Drag** any window by its title bar. **Resize** from an edge or corner.
-- Double-click desktop icons to launch apps, or use the Dock at the bottom.
-- The **Dock** at the bottom launches apps and shows what's running.
-- Open **Settings → Appearance** to change the wallpaper, including uploading your own.
+Everything you see here is designed to feel like a small operating system — with windows, apps, a terminal, files, settings, and more.
 
-## Terminal cheatsheet
+## Why I Built It
 
-\`\`\`
-ls, cd, pwd, cat, mkdir, touch, rm [-r], mv, echo, open <app>, apps, theme
-\`\`\`
+I wanted to build something that wasn't just another website.
 
-## About this file
+BrowserOS started as a way to experiment, learn, and have fun while creating a unique web experience. It's also a place where I can keep trying new ideas and improving my frontend development skills.
 
-This README lives in the real virtual filesystem at \`/System/README.md\` — try opening it in **Explorer**, or running \`cat /System/README.md\` in **Terminal**. Edit it here and your changes show up everywhere else too.
+## Explore
 
----
+Have a look around, open some apps, try the terminal, change the wallpaper, and see what you can find.
 
-Built with React, Zustand, and Framer Motion.
+**Thanks for checking out BrowserOS!**
+
+— **Haadi**
 `;
