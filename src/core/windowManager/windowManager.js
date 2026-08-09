@@ -28,11 +28,46 @@
  * }
  */
 
-import { DEFAULT_WINDOW, Z_INDEX_BASE, MIN_WINDOW_SIZE } from './constants';
+import {
+  DEFAULT_WINDOW,
+  Z_INDEX_BASE,
+  Z_INDEX_REBASE_SPAN,
+  MIN_WINDOW_SIZE,
+  NAVBAR_HEIGHT,
+} from './constants';
 import { clampWindowToViewport } from './mobileLayout';
 
 let idCounter = 0;
 const generateId = (appId) => `win_${appId}_${Date.now()}_${idCounter++}`;
+
+/**
+ * Clamps a normal (non-maximized) window's top edge to never sit above the
+ * navbar, so its title bar — and the close/minimize/maximize controls on
+ * it — can never be covered by the navbar. Used everywhere a normal
+ * window's y is set: open, drag, resize, and restore-from-maximize.
+ */
+const clampNormalY = (y) => Math.max(NAVBAR_HEIGHT, y);
+
+/**
+ * Normal-window z-indices are kept in a small, predictable band (see
+ * Z_INDEX_BASE / Z_INDEX_REBASE_SPAN in constants.js) so they can never
+ * grow tall enough, over a long session of opening/focusing windows, to
+ * collide with the navbar or maximized-window tiers above them. Whenever
+ * the running counter would leave that band, renumber every window
+ * sequentially — preserving their existing relative front-to-back order —
+ * and reset the counter back to the start of the band.
+ */
+function rebaseZIndicesIfNeeded(state) {
+  if (state.nextZIndex < Z_INDEX_BASE + Z_INDEX_REBASE_SPAN) return state;
+
+  const ordered = Object.values(state.windows).sort((a, b) => a.zIndex - b.zIndex);
+  const windows = { ...state.windows };
+  ordered.forEach((win, i) => {
+    windows[win.id] = { ...win, zIndex: Z_INDEX_BASE + i };
+  });
+
+  return { ...state, windows, nextZIndex: Z_INDEX_BASE + ordered.length };
+}
 
 /** Creates an empty, initial window-manager state. */
 export function createInitialState() {
@@ -50,6 +85,8 @@ export function createInitialState() {
  * @param {object} [options] - optional overrides (x, y, width, height, props)
  */
 export function openWindow(state, manifest, options = {}) {
+  state = rebaseZIndicesIfNeeded(state);
+
   const id = generateId(manifest.id);
   const zIndex = state.nextZIndex;
 
@@ -66,7 +103,8 @@ export function openWindow(state, manifest, options = {}) {
     title: options.title ?? manifest.title,
     icon: manifest.icon ?? null,
     x: options.x ?? DEFAULT_WINDOW.x + cascadeOffset,
-    y: options.y ?? DEFAULT_WINDOW.y + cascadeOffset,
+    // A normal window must always open below the navbar, never underneath it.
+    y: clampNormalY(options.y ?? DEFAULT_WINDOW.y + cascadeOffset),
     width,
     height,
     minWidth: manifest.minSize?.width ?? MIN_WINDOW_SIZE.width,
@@ -103,11 +141,14 @@ export function closeWindow(state, id) {
 
 /** Brings a window to the front and marks it focused. Restores it if minimized. */
 export function focusWindow(state, id) {
-  const win = state.windows[id];
-  if (!win) return state;
-  if (state.focusedId === id && win.zIndex === state.nextZIndex - 1 && !win.isMinimized) {
+  const winBefore = state.windows[id];
+  if (!winBefore) return state;
+  if (state.focusedId === id && winBefore.zIndex === state.nextZIndex - 1 && !winBefore.isMinimized) {
     return state; // already focused and on top — no-op
   }
+
+  state = rebaseZIndicesIfNeeded(state);
+  const win = state.windows[id]; // may have been renumbered by the rebase above
 
   const zIndex = state.nextZIndex;
   return {
@@ -176,7 +217,10 @@ export function restoreWindow(state, id) {
     ...state,
     windows: {
       ...state.windows,
-      [id]: { ...win, ...bounds, isMaximized: false, prevBounds: null },
+      // Clamp y defensively: prevBounds was valid when it was saved, but the
+      // viewport (or navbar height) may have changed since. Restoring must
+      // never place the title bar behind the navbar.
+      [id]: { ...win, ...bounds, y: clampNormalY(bounds.y), isMaximized: false, prevBounds: null },
     },
   };
 }
@@ -194,7 +238,9 @@ export function toggleMaximize(state, id, workspaceBounds) {
 export function moveWindow(state, id, x, y) {
   const win = state.windows[id];
   if (!win || win.isMaximized || !win.draggable) return state;
-  return { ...state, windows: { ...state.windows, [id]: { ...win, x, y } } };
+  // Defense-in-depth: useWindowDrag already stops the title bar at the
+  // navbar, but the store is the single source of truth, so it clamps too.
+  return { ...state, windows: { ...state.windows, [id]: { ...win, x, y: clampNormalY(y) } } };
 }
 
 /** Updates a window's size and position (called continuously during resize). */
@@ -204,12 +250,16 @@ export function resizeWindow(state, id, bounds) {
 
   const width = Math.max(win.minWidth, bounds.width);
   const height = Math.max(win.minHeight, bounds.height);
+  // Defense-in-depth: useWindowResize already compensates height when the
+  // top ('n') handle hits the navbar, but the store clamps too so no
+  // caller can push a normal window's title bar behind the navbar.
+  const y = clampNormalY(bounds.y);
 
   return {
     ...state,
     windows: {
       ...state.windows,
-      [id]: { ...win, x: bounds.x, y: bounds.y, width, height },
+      [id]: { ...win, x: bounds.x, y, width, height },
     },
   };
 }

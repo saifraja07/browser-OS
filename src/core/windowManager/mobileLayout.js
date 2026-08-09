@@ -9,6 +9,8 @@
  * always wins over an app's desktop-oriented `minSize`.
  */
 
+import { NAVBAR_HEIGHT } from './constants';
+
 /** Below this viewport width, BrowserOS switches to the mobile layout. */
 export const MOBILE_BREAKPOINT = 768;
 
@@ -39,7 +41,9 @@ export function getMobileWindowBounds({
   dockReserve = MOBILE_DOCK_HEIGHT,
 }) {
   const maxWidth = Math.max(MIN_DIMENSION, viewportWidth - MARGIN * 2);
-  const maxHeight = Math.max(MIN_DIMENSION, viewportHeight - dockReserve - MARGIN * 2);
+  // Reserve navbar space at the top so a freshly-opened window's title bar
+  // never starts out underneath it.
+  const maxHeight = Math.max(MIN_DIMENSION, viewportHeight - dockReserve - NAVBAR_HEIGHT - MARGIN * 2);
 
   const desiredWidth = manifest.defaultSize?.width ?? maxWidth;
   const desiredHeight = manifest.defaultSize?.height ?? maxHeight;
@@ -48,7 +52,7 @@ export function getMobileWindowBounds({
   const height = Math.min(desiredHeight, maxHeight);
 
   const x = Math.max(MARGIN, Math.round((viewportWidth - width) / 2));
-  const y = MARGIN;
+  const y = NAVBAR_HEIGHT + MARGIN;
 
   return { x, y, width, height };
 }
@@ -67,7 +71,7 @@ export function clampWindowToViewport(
   if (win.isMaximized) return win;
 
   const maxWidth = Math.max(MIN_DIMENSION, viewportWidth - MARGIN * 2);
-  const maxHeight = Math.max(MIN_DIMENSION, viewportHeight - dockReserve - MARGIN * 2);
+  const maxHeight = Math.max(MIN_DIMENSION, viewportHeight - dockReserve - NAVBAR_HEIGHT - MARGIN * 2);
 
   const width = Math.min(win.width, maxWidth);
   const height = Math.min(win.height, maxHeight);
@@ -76,8 +80,10 @@ export function clampWindowToViewport(
   const minX = -(width - MIN_VISIBLE);
   const x = Math.min(Math.max(win.x, minX), Math.max(minX, maxX));
 
-  const maxY = Math.max(0, viewportHeight - dockReserve - MIN_VISIBLE);
-  const y = Math.min(Math.max(win.y, 0), maxY);
+  // Never let a window's title bar rest above the navbar, even after a
+  // resize/orientation-change forces this clamp to run.
+  const maxY = Math.max(NAVBAR_HEIGHT, viewportHeight - dockReserve - MIN_VISIBLE);
+  const y = Math.min(Math.max(win.y, NAVBAR_HEIGHT), maxY);
 
   return { ...win, x, y, width, height };
 }

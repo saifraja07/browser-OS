@@ -44,7 +44,7 @@ export default function ContextMenu() {
           exit={{ opacity: 0, scale: 0.94 }}
           transition={{ duration: 0.12 }}
           style={{ left: clampedX, top: clampedY }}
-          className="fixed z-[10000] min-w-[190px] overflow-hidden rounded-lg border-2 border-os-border-strong bg-os-surface py-1 shadow-os-window"
+          className="fixed z-[var(--z-context-menu)] min-w-[190px] overflow-hidden rounded-lg border-2 border-os-border-strong bg-os-surface py-1 shadow-os-window"
         >
           {items.map((item) => (
             <button

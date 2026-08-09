@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useWindowStore } from '../store/useWindowStore';
+import { NAVBAR_HEIGHT } from '../core/windowManager/constants';
 
 /**
  * Returns an onPointerDown handler for a resize handle positioned at `direction`
@@ -47,8 +48,12 @@ export function useWindowResize(windowId, direction) {
         next.x = x + dx;
       }
       if (direction.includes('n')) {
-        next.height = height - dy;
-        next.y = y + dy;
+        // Stop the top edge at the navbar. Compensate height by the actual
+        // (possibly clamped) delta so the bottom edge doesn't jump when the
+        // clamp kicks in.
+        const nextY = Math.max(NAVBAR_HEIGHT, y + dy);
+        next.height = height + (y - nextY);
+        next.y = nextY;
       }
 
       resizeWindow(windowId, next);

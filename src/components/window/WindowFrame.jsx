@@ -4,7 +4,7 @@ import { useWindowStore, selectWindow, selectIsFocused } from '../../store/useWi
 import { getApp } from '../../core/appRuntime/appRegistry';
 import { useWindowDrag } from '../../hooks/useWindowDrag';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { MOBILE_DOCK_HEIGHT } from '../../core/windowManager/mobileLayout';
+import { Z_INDEX_BASE, Z_MAXIMIZED_BASE } from '../../core/windowManager/constants';
 import TitleBar from './TitleBar';
 import ResizeHandles from './ResizeHandles';
 
@@ -34,13 +34,20 @@ function WindowFrame({ id }) {
 
   if (!win) return null;
 
-  const dockReserve = isMobile ? MOBILE_DOCK_HEIGHT + 24 : 96;
+  // A maximized window must cover the full viewport — including the navbar
+  // (and dock) — edge to edge, with its own title bar visible at y: 0.
   const workspaceBounds = {
-    x: 8,
-    y: 8,
-    width: window.innerWidth - 16,
-    height: window.innerHeight - dockReserve,
+    x: 0,
+    y: 0,
+    width: window.innerWidth,
+    height: window.innerHeight,
   };
+
+  // Normal windows stack in the low z-index band below the navbar (see
+  // constants.js). A maximized window is elevated into its own band above
+  // the navbar and its popovers, while preserving the same relative
+  // front-to-back order it had as a normal window.
+  const zIndex = win.isMaximized ? Z_MAXIMIZED_BASE + (win.zIndex - Z_INDEX_BASE) : win.zIndex;
 
   return (
     <motion.div
@@ -61,7 +68,7 @@ function WindowFrame({ id }) {
         top: win.y,
         width: win.width,
         height: win.height,
-        zIndex: win.zIndex,
+        zIndex,
         display: win.isMinimized ? 'none' : undefined,
         boxShadow: isFocused ? 'var(--shadow-os-window-focused)' : 'var(--shadow-os-window)',
       }}

@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { useWindowStore } from '../store/useWindowStore';
 import { isMobileViewport, clampWindowToViewport } from '../core/windowManager/mobileLayout';
+import { NAVBAR_HEIGHT } from '../core/windowManager/constants';
 
 /**
  * Returns an onPointerDown handler to spread onto a window's title bar.
@@ -40,7 +41,9 @@ export function useWindowDrag(windowId) {
       const dx = e.clientX - drag.startPointerX;
       const dy = e.clientY - drag.startPointerY;
       let nextX = drag.startWinX + dx;
-      let nextY = Math.max(0, drag.startWinY + dy);
+      // Never let the title bar be dragged underneath the navbar — its
+      // controls (close/minimize/maximize) must always stay reachable.
+      let nextY = Math.max(NAVBAR_HEIGHT, drag.startWinY + dy);
 
       // Keep the window reachable on mobile: never let it drag fully
       // off-screen or under the dock. Desktop dragging is unaffected.

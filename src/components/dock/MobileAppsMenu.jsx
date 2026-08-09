@@ -28,10 +28,10 @@ export default function MobileAppsMenu() {
     <>
       {/* Invisible tap-outside-to-close catcher — the wallpaper stays fully
           visible behind the menu, nothing is dimmed or blurred. */}
-      <div className="fixed inset-0 z-9998" onClick={close} role="presentation" />
+      <div className="fixed inset-0 z-[var(--z-navbar)]" onClick={close} role="presentation" />
 
       <div
-        className="pixel-cut fixed inset-x-6 z-9999 max-h-[50vh] overflow-y-auto border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface p-4 shadow-os-window"
+        className="pixel-cut rounded-[12px] fixed inset-x-6 z-[var(--z-navbar-menu)] max-h-[50vh] overflow-y-auto border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface p-4 shadow-os-window"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom, 0px) + var(--os-dock-height) + 22px)',
         }}

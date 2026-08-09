@@ -38,13 +38,37 @@
 }
 
 /*
- * Shape/texture tokens are theme-driven but aren't Tailwind color tokens, so
- * they live in a plain :root block rather than @theme. The Theme Engine
- * overwrites these (as inline styles, which win over this stylesheet rule)
- * before the first paint — see main.jsx — so this block only exists as a
- * safety-net default.
+ * z-index stacking scale — a single source of truth so the system UI
+ * (navbar/dock chrome and their popovers) and the window manager (normal
+ * app windows below the navbar, maximized app windows above it) never fight
+ * over scattered magic numbers. Referenced from components via arbitrary
+ * Tailwind values, e.g. `z-[var(--z-navbar)]`.
+ *
+ * Normal windows and maximized windows are positioned entirely from JS
+ * inline styles (see core/windowManager/constants.js: Z_INDEX_BASE and
+ * Z_MAXIMIZED_BASE), so they aren't listed as CSS variables here, but they
+ * occupy dedicated bands in the same scale:
+ *   normal windows      [100, 200)
+ *   navbar / dock         --z-navbar (below)
+ *   navbar popovers        --z-navbar-menu (below)
+ *   maximized windows    [400, 500)
+ *   context menu           --z-context-menu (below)
+ *   notifications           --z-notifications (below)
+ *   boot screen               --z-boot (below)
+ *
+ * Shape/texture tokens below are theme-driven but aren't Tailwind color
+ * tokens, so they live in this plain :root block rather than @theme. The
+ * Theme Engine overwrites those (as inline styles, which win over this
+ * stylesheet rule) before the first paint — see main.jsx — so those
+ * particular declarations only exist as a safety-net default.
  */
 :root {
+  --z-navbar: 300;
+  --z-navbar-menu: 350;
+  --z-context-menu: 600;
+  --z-notifications: 700;
+  --z-boot: 800;
+
   --os-radius-window: 16px;
   --os-radius-sm: 10px;
   --os-border-width: 2px;
@@ -119,6 +143,21 @@ button:focus-visible {
 
 .os-disk-spin {
   animation: os-disk-spin 2.6s linear infinite;
+}
+
+/* Boot screen: indeterminate progress sweep. Purely decorative — nothing
+   is actually loading, it just paces the startup beat. */
+@keyframes os-boot-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.os-boot-bar {
+  animation: os-boot-bar 1.1s ease-in-out infinite;
 }
 
 .os-icon-shell {

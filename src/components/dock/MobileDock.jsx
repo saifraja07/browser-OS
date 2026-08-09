@@ -24,7 +24,7 @@ export default function MobileDock() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.15 }}
-      className="os-dock pixel-cut fixed left-1/2 z-9998 flex -translate-x-1/2 items-center gap-2 border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface/35 px-3 py-2 backdrop-blur-md shadow-os-window"
+      className="os-dock rounded-[12px] pixel-cut fixed left-1/2 z-[var(--z-navbar)] flex -translate-x-1/2 items-center gap-2 border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface/35 px-3 py-2 backdrop-blur-md shadow-os-window"
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
       aria-label="Application dock"
     >
