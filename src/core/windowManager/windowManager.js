@@ -35,7 +35,7 @@ import {
   MIN_WINDOW_SIZE,
   NAVBAR_HEIGHT,
 } from './constants';
-import { clampWindowToViewport } from './mobileLayout';
+import { fitWindowToViewport } from './mobileLayout';
 
 let idCounter = 0;
 const generateId = (appId) => `win_${appId}_${Date.now()}_${idCounter++}`;
@@ -107,6 +107,12 @@ export function openWindow(state, manifest, options = {}) {
     y: clampNormalY(options.y ?? DEFAULT_WINDOW.y + cascadeOffset),
     width,
     height,
+    // The app's authored, "natural" size — kept alongside the live
+    // width/height so a non-resizable window can be scaled back UP toward
+    // this as room reappears on viewport resize, not just shrunk once and
+    // left small forever. See fitWindowToViewport in mobileLayout.js.
+    defaultWidth: manifest.defaultSize?.width ?? width,
+    defaultHeight: manifest.defaultSize?.height ?? height,
     minWidth: manifest.minSize?.width ?? MIN_WINDOW_SIZE.width,
     minHeight: manifest.minSize?.height ?? MIN_WINDOW_SIZE.height,
     isMinimized: false,
@@ -265,14 +271,16 @@ export function resizeWindow(state, id, bounds) {
 }
 
 /**
- * Clamps every window's bounds into the given viewport (mobile only — see
- * mobileLayout.js). Called on resize/orientation-change so a window can
- * never end up permanently off-screen or hidden behind the mobile dock.
+ * Re-fits every window into the given viewport (mobile only — see
+ * mobileLayout.js). Called on resize/orientation-change so a window that
+ * no longer fits at its old (often desktop-authored) position is
+ * re-centered into full view instead of being left mostly off-screen —
+ * while windows that still fit are left exactly where they are.
  */
 export function clampWindowsToViewport(state, viewportWidth, viewportHeight, dockReserve) {
   const windows = {};
   for (const [id, win] of Object.entries(state.windows)) {
-    windows[id] = clampWindowToViewport(win, viewportWidth, viewportHeight, dockReserve);
+    windows[id] = fitWindowToViewport(win, viewportWidth, viewportHeight, dockReserve);
   }
   return { ...state, windows };
 }

@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useWindowStore } from '../store/useWindowStore';
-import { isMobileViewport, clampWindowToViewport } from '../core/windowManager/mobileLayout';
+import { isMobileViewport, clampWindowToViewport, getViewportSize } from '../core/windowManager/mobileLayout';
 import { NAVBAR_HEIGHT } from '../core/windowManager/constants';
 
 /**
@@ -50,10 +50,11 @@ export function useWindowDrag(windowId) {
       if (isMobileViewport()) {
         const win = useWindowStore.getState().windows[windowId];
         if (win) {
+          const { width: viewportWidth, height: viewportHeight } = getViewportSize();
           const clamped = clampWindowToViewport(
             { ...win, x: nextX, y: nextY },
-            window.innerWidth,
-            window.innerHeight
+            viewportWidth,
+            viewportHeight
           );
           nextX = clamped.x;
           nextY = clamped.y;

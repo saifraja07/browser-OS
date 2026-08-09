@@ -22,8 +22,10 @@ export default function LoginScreen({ onUnlock }) {
   };
 
   return (
-    <>
-      {/* Blurred wallpaper */}
+    <div className="relative h-dvh w-full overflow-hidden">
+      {/* Blurred wallpaper. Contained by the overflow-hidden wrapper above,
+          so the scale-up used for the blur bleed never pushes the document
+          itself into scrollable/overflow territory (the previous bug). */}
       <div
         className="absolute inset-0 scale-110 bg-cover bg-center blur-lg"
         style={{ backgroundImage: `url(${wallpaperSrc})` }}
@@ -71,6 +73,6 @@ export default function LoginScreen({ onUnlock }) {
           </div>
         </div>
       </form>
-    </>
+    </div>
   );
 }

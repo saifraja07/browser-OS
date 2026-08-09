@@ -5,6 +5,7 @@ import { getApp } from '../../core/appRuntime/appRegistry';
 import { useWindowDrag } from '../../hooks/useWindowDrag';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Z_INDEX_BASE, Z_MAXIMIZED_BASE } from '../../core/windowManager/constants';
+import { getViewportSize } from '../../core/windowManager/mobileLayout';
 import TitleBar from './TitleBar';
 import ResizeHandles from './ResizeHandles';
 
@@ -36,11 +37,12 @@ function WindowFrame({ id }) {
 
   // A maximized window must cover the full viewport — including the navbar
   // (and dock) — edge to edge, with its own title bar visible at y: 0.
+  const { width: viewportWidth, height: viewportHeight } = getViewportSize();
   const workspaceBounds = {
     x: 0,
     y: 0,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: viewportWidth,
+    height: viewportHeight,
   };
 
   // Normal windows stack in the low z-index band below the navbar (see

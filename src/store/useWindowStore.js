@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import * as wm from '../core/windowManager/windowManager';
 import { getApp } from '../core/appRuntime/appRegistry';
-import { isMobileViewport, getMobileWindowBounds } from '../core/windowManager/mobileLayout';
+import { isMobileViewport, getMobileWindowBounds, getViewportSize } from '../core/windowManager/mobileLayout';
 
 export const useWindowStore = create((set, get) => ({
   ...wm.createInitialState(),
@@ -27,10 +27,11 @@ export const useWindowStore = create((set, get) => ({
     // caller ever passes them) still win over the computed mobile bounds.
     let finalOptions = options;
     if (typeof window !== 'undefined' && isMobileViewport()) {
+      const { width: viewportWidth, height: viewportHeight } = getViewportSize();
       const mobileBounds = getMobileWindowBounds({
         manifest,
-        viewportWidth: window.innerWidth,
-        viewportHeight: window.innerHeight,
+        viewportWidth,
+        viewportHeight,
       });
       finalOptions = { ...mobileBounds, ...options };
     }

@@ -11,7 +11,7 @@ export default function Desktop({ children, isMobile = false }) {
 
   return (
     <div
-      className="relative h-screen w-screen overflow-hidden bg-os-bg"
+      className="relative h-dvh w-full overflow-hidden bg-os-bg"
       style={{
         backgroundImage: `url(${wallpaperSrc})`,
         backgroundSize: 'cover',

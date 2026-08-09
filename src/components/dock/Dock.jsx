@@ -2,8 +2,11 @@ import { motion } from 'framer-motion';
 import { getAllApps } from '../../core/appRuntime/appRegistry';
 import DockItem from './DockItem';
 
-// Information/document apps live on the desktop rather than in the dock.
-const DESKTOP_ONLY_APPS = new Set(['about', 'readme']);
+// README still has its own desktop shortcut, so it's left out of the dock
+// to avoid a duplicate launch point. About no longer has a desktop
+// shortcut (the shortcut bar is fixed to exactly 5 apps), so it now lives
+// in the dock to stay reachable.
+const DESKTOP_ONLY_APPS = new Set(['readme']);
 
 export default function Dock() {
   const apps = getAllApps().filter((app) => !DESKTOP_ONLY_APPS.has(app.id));

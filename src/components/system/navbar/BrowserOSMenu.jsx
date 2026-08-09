@@ -46,10 +46,9 @@ export default function BrowserOSMenu({ onShutDown }) {
       onSelect: () =>
         notify({
           title: 'Licenses',
-          message: 'BrowserOS is a personal project built with React, Vite, Zustand & Framer Motion.',
+          message: '© 2026 Haadi. BrowserOS is a personal project created for learning, experimentation, and building a desktop-like experience on the web. All rights reserved. Please respect the original work and attribution when using or sharing this project.',
         }),
     },
-    { id: 'explore', label: 'Explore', onSelect: () => openApp('explorer') },
   ];
 
   return (
@@ -60,7 +59,7 @@ export default function BrowserOSMenu({ onShutDown }) {
     aria-label="BrowserOS menu"
     aria-haspopup="menu"
     aria-expanded={isOpen}
-    className="flex  h-5 w-5 sm:h-12 sm:w-12 sm:-ml-2 items-center justify-center rounded-[var(--os-radius-sm)] transition-colors  hover:bg-white/15 active:bg-white/20"
+    className="flex  h-5 w-5 sm:h-12 sm:w-12 sm:-ml-2 items-center justify-center rounded-(--os-radius-sm) transition-colors  hover:bg-white/15 active:bg-white/20"
   >
     <img
       src={computerIcon}
@@ -79,7 +78,7 @@ export default function BrowserOSMenu({ onShutDown }) {
         transition={{ duration: 0.12 }}
         role="menu"
         aria-label="BrowserOS menu"
-        className="pixel-cut absolute left-0 top-full z-[var(--z-navbar-menu)] mt-2 w-48 overflow-hidden border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface py-1 shadow-os-window"
+        className="pixel-cut absolute left-0 top-full z-(--z-navbar-menu) mt-2 w-48 overflow-hidden border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface py-1 shadow-os-window"
       >
         {items.map((item) => (
           <button

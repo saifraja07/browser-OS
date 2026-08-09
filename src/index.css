@@ -89,17 +89,41 @@
   --os-ui-opacity: 0.94;
 }
 
-html,
+html {
+  /* Use the dynamic viewport height directly on the root so mobile browser
+     chrome (address bar show/hide) never leaves a sliver of the page
+     scrollable — 100% alone would just inherit the old vh-based viewport. */
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body,
 #root {
   height: 100%;
+  width: 100%;
   margin: 0;
+  padding: 0;
+  /* BrowserOS is a full-screen app shell, not a scrollable document — the
+     document/root level never scrolls or overscrolls. Individual app
+     windows manage their own internal scrolling (see each app's
+     `overflow-auto` content pane) and are unaffected by this. */
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
   font-family: var(--font-body);
   color: var(--color-os-ink);
   -webkit-font-smoothing: antialiased;
+  /* Belt-and-suspenders: also block touch-driven pull-to-refresh directly,
+     since some mobile browsers honor this even when overscroll-behavior on
+     html is imperfectly supported. */
+  overscroll-behavior-y: none;
 }
 
 /* Pixel-cut corner utility — the signature "stepped" edge used on window
