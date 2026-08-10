@@ -8,13 +8,13 @@ import SystemPanel from "./SystemPanel";
 import computerIcon from "../../../assets/icons/computer.webp";
 
 /**
- * BrowserOS system menu. System Info and Licenses use the same compact
- * SystemPanel shell as Wi-Fi, Battery, and Date & Time, positioned directly
- * below the navbar.
+ * BrowserOS system menu. About This OS, System Info, and Licenses use the
+ * same compact SystemPanel shell as Wi-Fi, Battery, and Date & Time.
  */
 export default function BrowserOSMenu({ onShutDown }) {
   const activeMenu = useSystemBarStore((s) => s.activeMenu);
   const isOpen = activeMenu === "browseros";
+  const isAboutOpen = activeMenu === "about";
   const isSystemInfoOpen = activeMenu === "system-info";
   const isLicensesOpen = activeMenu === "licenses";
   const isClearSiteDataOpen = activeMenu === "clear-site-data-confirm";
@@ -27,7 +27,12 @@ export default function BrowserOSMenu({ onShutDown }) {
   useCloseOnOutside(
     ref,
     activeMenu !== null &&
-      (isOpen || isSystemInfoOpen || isLicensesOpen || isClearSiteDataOpen || isShutDownOpen),
+      (isOpen ||
+        isAboutOpen ||
+        isSystemInfoOpen ||
+        isLicensesOpen ||
+        isClearSiteDataOpen ||
+        isShutDownOpen),
     closeMenu,
   );
 
@@ -59,7 +64,11 @@ export default function BrowserOSMenu({ onShutDown }) {
   };
 
   const items = [
-    { id: "about", label: "About This OS", onSelect: () => openApp("about") },
+    {
+      id: "about",
+      label: "About This OS",
+      onSelect: () => openSystemPanel("about"),
+    },
     {
       id: "system-info",
       label: "System Info",
@@ -100,7 +109,7 @@ export default function BrowserOSMenu({ onShutDown }) {
             transition={{ duration: 0.12 }}
             role="menu"
             aria-label="BrowserOS menu"
-            className="pixel-cut absolute left-0 top-full z-(--z-navbar-menu) mt-2 w-48 overflow-hidden border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface py-1 shadow-os-window"
+            className="pixel-cut absolute left-0 top-full z-(--z-navbar-menu) mt-2 w-48 overflow-hidden border-(length:--os-border-width) border-os-border-strong bg-os-surface py-1 shadow-os-window"
           >
             {items.map((item) => (
               <button
@@ -108,7 +117,11 @@ export default function BrowserOSMenu({ onShutDown }) {
                 type="button"
                 role="menuitem"
                 onClick={() => {
-                  if (item.id === "system-info" || item.id === "licenses") {
+                  if (
+                    item.id === "about" ||
+                    item.id === "system-info" ||
+                    item.id === "licenses"
+                  ) {
                     item.onSelect();
                   } else {
                     runAndClose(item.onSelect);
@@ -141,11 +154,44 @@ export default function BrowserOSMenu({ onShutDown }) {
           </motion.div>
         )}
 
+        {isAboutOpen && (
+          <SystemPanel
+            title="About This OS"
+            onClose={closeMenu}
+            className="absolute left-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
+          >
+            <div className="max-h-[min(62vh,430px)] overflow-y-auto pr-1 text-[11px] leading-5 text-os-ink-soft">
+              <div>
+                <h2 className="font-display text-sm text-os-ink">BrowserOS</h2>
+                <p className="mt-0.5 text-[10px]">Version 1.0</p>
+              </div>
+
+              <div className="my-3 border-y-2 border-os-border py-3">
+                <p>Welcome to BrowserOS!</p>
+                <p className="mt-2">
+                  Your little desktop, right inside your browser.
+                </p>
+                <p className="mt-2">
+                  Inspired by the classic computers of the 1990s — when
+                  computers were beige, pixels were chunky, and every click felt
+                  important.
+                </p>
+              </div>
+
+              <div className=" border-os-border">
+                <p>Running entirely in your web browser.</p>
+                <p className="mt-1">© 2026 BrowserOS</p>
+                <p className="mt-1">Created by Haadi</p>
+              </div>
+            </div>
+          </SystemPanel>
+        )}
+
         {isSystemInfoOpen && (
           <SystemPanel
             title="System Info"
             onClose={closeMenu}
-            className="absolute left-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+            className="absolute left-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
           >
             <div className="flex items-center justify-between gap-4">
               <span className="text-os-ink-soft">Platform</span>
@@ -170,7 +216,7 @@ export default function BrowserOSMenu({ onShutDown }) {
           <SystemPanel
             title="Licenses"
             onClose={closeMenu}
-            className="absolute left-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+            className="absolute left-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
           >
             <p className="leading-5">
               © 2026 Haadi. BrowserOS is a personal project created for
@@ -184,7 +230,7 @@ export default function BrowserOSMenu({ onShutDown }) {
           <SystemPanel
             title="Shut Down"
             onClose={closeMenu}
-            className="absolute left-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+            className="absolute left-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
           >
             <p className="leading-5">
               Shut down functionality is disabled in this demo.
@@ -193,7 +239,7 @@ export default function BrowserOSMenu({ onShutDown }) {
               <button
                 type="button"
                 onClick={handleProceedShutdown}
-                className="border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface px-3 py-1.5 font-body text-[11px] text-os-ink hover:bg-os-ink hover:text-os-surface"
+                className="border-(length:--os-border-width) border-os-border-strong bg-os-surface px-3 py-1.5 font-body text-[11px] text-os-ink hover:bg-os-ink hover:text-os-surface"
               >
                 Proceed Anyway
               </button>
@@ -215,14 +261,14 @@ export default function BrowserOSMenu({ onShutDown }) {
               <button
                 type="button"
                 onClick={closeMenu}
-                className="border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface px-3 py-1.5 font-body text-[11px] text-os-ink  hover:bg-os-ink hover:text-os-surface"
+                className="border-(length:--os-border-width) border-os-border-strong bg-os-surface px-3 py-1.5 font-body text-[11px] text-os-ink  hover:bg-os-ink hover:text-os-surface"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleClearSiteData}
-                className="border-[length:var(--os-border-width)] border-os-danger bg-os-danger px-3 py-1.5 font-body text-[11px] text-os-surface  hover:opacity-90"
+                className="border-(length:--os-border-width) border-os-danger bg-os-danger px-3 py-1.5 font-body text-[11px] text-os-surface  hover:opacity-90"
               >
                 Confirm
               </button>

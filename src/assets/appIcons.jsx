@@ -1,4 +1,3 @@
-import aboutIcon from './icons/about.webp';
 import calculatorIcon from './icons/calculator.webp';
 import calendarIcon from './icons/calendar.webp';
 import communityIcon from './icons/community.webp';
@@ -11,7 +10,7 @@ import terminalIcon from './icons/terminal.webp';
 import appsIcon from './icons/apps.webp';
 
 const ICONS = {
-  about: aboutIcon, calculator: calculatorIcon, calendar: calendarIcon,
+  calculator: calculatorIcon, calendar: calendarIcon,
   community: communityIcon,
   explorer: explorerIcon, messages: messageIcon, music: musicIcon,
   readme: readmeIcon, settings: settingIcon, terminal: terminalIcon, apps: appsIcon,

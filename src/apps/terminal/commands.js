@@ -296,18 +296,6 @@ export const COMMANDS = {
     ],
   },
 
-  about: {
-    usage: 'about',
-    description: 'Show information about BrowserOS',
-    run: async () => [
-      'BrowserOS',
-      '────────────────────────',
-      'A browser-based operating system.',
-      '',
-      'Built with React, Vite, Zustand & Framer Motion.',
-    ],
-  },
-
   history: {
     usage: 'history',
     description: 'Explain command history',

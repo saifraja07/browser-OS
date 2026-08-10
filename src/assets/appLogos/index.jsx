@@ -79,17 +79,6 @@ export function SettingsLogo(props) {
 }
 
 
-export function AboutLogo(props) {
-  return (
-    <PixelSvg {...props}>
-      <rect x="2" y="2" width="12" height="12" fill="currentColor" />
-      <rect x="4" y="4" width="8" height="8" fill="var(--color-os-surface)" />
-      <rect x="7" y="5" width="2" height="2" fill="var(--color-os-accent)" />
-      <rect x="7" y="8" width="2" height="3" fill="currentColor" />
-    </PixelSvg>
-  );
-}
-
 export function ReadmeLogo(props) {
   return (
     <PixelSvg {...props}>

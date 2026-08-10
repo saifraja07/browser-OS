@@ -8,6 +8,5 @@ export const DESKTOP_LOGOS = {
   terminal: (props) => <AppIcon appId="terminal" {...props} />,
   calendar: (props) => <AppIcon appId="calendar" {...props} />,
   messages: (props) => <AppIcon appId="messages" {...props} />,
-  about: (props) => <AppIcon appId="about" {...props} />,
   readme: (props) => <AppIcon appId="readme" {...props} />,
 };

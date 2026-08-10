@@ -4,15 +4,6 @@ import { registerApps } from '../core/appRuntime/appRegistry';
 
 registerApps([
   {
-    id: 'about',
-    title: 'BrowserOS Info',
-    icon: (props) => <AppIcon appId="about" {...props} />,
-    component: () => import('./about/AboutApp'),
-    defaultSize: { width: 420, height: 260 },
-    minSize: { width: 300, height: 180 },
-    singleInstance: true,
-  },
-  {
     id: 'calculator',
     title: 'Calculator',
     icon: (props) => <AppIcon appId="calculator" {...props} />,

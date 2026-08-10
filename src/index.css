@@ -232,7 +232,7 @@ button:focus-visible {
   image-rendering: pixelated;
   user-select: none;
   -webkit-user-drag: none;
-  animation: os-record-spin 7s linear infinite;
+  animation: os-record-spin 4.8s linear infinite;
   animation-play-state: paused;
   will-change: transform;
 }
@@ -327,7 +327,7 @@ button:focus-visible {
   }
 
   .music-app__volume {
-    margin-top: 6px;
+    /* margin-top: 6px; */
   }
 
   .music-app__discs {
@@ -345,5 +345,189 @@ button:focus-visible {
   .music-app__discs button > div {
     width: 36px !important;
     height: 36px !important;
+  }
+}
+
+/* README text viewer ---------------------------------------------------- */
+.readme-app {
+  color: var(--color-os-ink);
+}
+
+.readme-app__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border-bottom: 2px solid var(--color-os-border-strong);
+  background: var(--color-os-surface-2);
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: var(--os-display-tracking);
+}
+
+.readme-app__file,
+.readme-app__mode,
+.readme-app__status {
+  display: flex;
+  align-items: center;
+}
+
+.readme-app__file {
+  min-width: 0;
+  gap: 7px;
+  color: var(--color-os-ink);
+}
+
+.readme-app__file span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.readme-app__dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-os-border-strong);
+  background: var(--color-os-mint);
+  box-shadow: 2px 2px 0 rgba(43, 36, 56, 0.18);
+}
+
+.readme-app__mode {
+  flex: 0 0 auto;
+  color: var(--color-os-ink-soft);
+  white-space: nowrap;
+}
+
+.readme-app__body {
+  background: var(--color-os-surface);
+}
+
+.readme-app__paper {
+  width: min(100%, 760px);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 18px 18px 26px;
+  background-color: var(--color-os-surface);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(43, 36, 56, 0.035) 0,
+    rgba(43, 36, 56, 0.035) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+.readme-text {
+  border: 2px solid var(--color-os-border-strong);
+  background: var(--color-os-surface-2);
+  box-shadow: 4px 4px 0 rgba(43, 36, 56, 0.16);
+  padding: 16px 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.readme-text__title {
+  margin-bottom: 4px;
+  color: var(--color-os-ink);
+  font-family: var(--font-display);
+  font-size: clamp(12px, 2.2vw, 16px);
+  line-height: 1.4;
+  letter-spacing: var(--os-display-tracking);
+}
+
+.readme-text__section {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+  color: var(--color-os-ink);
+  font-family: var(--font-display);
+  font-size: clamp(10px, 1.8vw, 12px);
+  line-height: 1.5;
+  letter-spacing: var(--os-display-tracking);
+}
+
+.readme-text__prompt {
+  color: var(--color-os-accent);
+  font-weight: 700;
+}
+
+.readme-text__line {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 9px;
+  color: var(--color-os-ink-soft);
+}
+
+.readme-text__gutter {
+  color: var(--color-os-border-strong);
+  font-size: 9px;
+  line-height: 2;
+  user-select: none;
+  opacity: 0.65;
+}
+
+.readme-text__rule {
+  margin: 8px 0;
+  color: var(--color-os-border-strong);
+  font-size: 10px;
+  line-height: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.readme-text__blank {
+  height: 9px;
+}
+
+.readme-app__status {
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 25px;
+  padding: 4px 9px;
+  border-top: 2px solid var(--color-os-border-strong);
+  background: var(--color-os-surface-2);
+  color: var(--color-os-ink-soft);
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: var(--os-display-tracking);
+}
+
+@media (max-width: 520px) {
+  .readme-app__toolbar {
+    padding-inline: 8px;
+    font-size: 8px;
+  }
+
+  .readme-app__mode {
+    display: none;
+  }
+
+  .readme-app__paper {
+    padding: 10px 9px 18px;
+  }
+
+  .readme-text {
+    padding: 12px 10px 14px;
+    font-size: 11px;
+    line-height: 1.6;
+    box-shadow: 3px 3px 0 rgba(43, 36, 56, 0.14);
+  }
+
+  .readme-text__line {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .readme-text__gutter {
+    font-size: 8px;
+  }
+
+  .readme-app__status {
+    font-size: 7px;
   }
 }

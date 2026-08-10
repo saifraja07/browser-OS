@@ -92,7 +92,7 @@ export default function MusicApp() {
               {track.title}
             </div>
             <div className="music-app__subtitle mt-0.5 font-mono text-[9px] leading-4 text-os-ink-soft">
-              Pixel Records. Stereo audio.
+              Spin The Good Stuff.
             </div>
           </div>
 
@@ -105,7 +105,7 @@ export default function MusicApp() {
             {isPlaying ? <Pause size={18} strokeWidth={2.5} /> : <Play size={18} strokeWidth={2.5} className="ml-0.5" />}
           </button>
 
-          <div className="music-app__volume mt-2 flex w-full max-w-[300px] items-center gap-2 px-1">
+          <div className="music-app__volume my-4 flex w-full max-w-75 items-center gap-2 px-1">
             {volume === 0 ? (
               <Volume1 size={15} className="shrink-0 text-os-ink-soft" aria-hidden="true" />
             ) : (
