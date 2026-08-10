@@ -1,9 +1,8 @@
 import { motion } from 'framer-motion';
-import { LayoutGrid } from 'lucide-react';
+import { AppIcon } from '../../assets/appIcons';
 import { getApp } from '../../core/appRuntime/appRegistry';
 import { useWindowStore } from '../../store/useWindowStore';
 import { useMobileUIStore } from '../../store/useMobileUIStore';
-import { DESKTOP_LOGOS } from '../desktop/desktopLogos';
 import { MOBILE_PRIMARY_LEFT_APP, MOBILE_PRIMARY_RIGHT_APP } from './mobileDockConstants';
 
 /**
@@ -35,7 +34,7 @@ export default function MobileDock() {
         onClick={toggleAllApps}
         aria-expanded={isAllAppsOpen}
       >
-        <LayoutGrid size={20} strokeWidth={2.25} />
+        <AppIcon appId="apps" size={22} alt="" />
       </MobileDockButton>
       <MobilePrimaryButton appId={MOBILE_PRIMARY_RIGHT_APP} />
     </motion.div>
@@ -52,7 +51,6 @@ function MobilePrimaryButton({ appId }) {
 
   const isRunning = Object.values(windows).some((w) => w.appId === appId);
   const isActive = Object.values(windows).some((w) => w.id === focusedId && w.appId === appId);
-  const Icon = DESKTOP_LOGOS[appId] ?? manifest.icon;
 
   return (
     <MobileDockButton
@@ -61,7 +59,7 @@ function MobilePrimaryButton({ appId }) {
       isActive={isActive}
       onClick={() => openApp(appId)}
     >
-      {Icon ? <Icon size={22} className="h-5.5 w-5.5" /> : null}
+      <AppIcon appId={appId} size={22} />
     </MobileDockButton>
   );
 }

@@ -157,18 +157,6 @@ button:focus-visible {
   min-height: var(--os-dock-height);
 }
 
-/* Music app: the central disk only spins while a track is actually
-   playing — this class is applied/removed in JS, never left running. */
-@keyframes os-disk-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.os-disk-spin {
-  animation: os-disk-spin 2.6s linear infinite;
-}
-
 /* Boot screen: indeterminate progress sweep. Purely decorative — nothing
    is actually loading, it just paces the startup beat. */
 @keyframes os-boot-bar {
@@ -213,4 +201,149 @@ button:focus-visible {
 *::-webkit-scrollbar-thumb {
   background: var(--color-os-border-strong);
   border: 2px solid var(--color-os-surface-2);
+}
+
+/* Music player ----------------------------------------------------------- */
+.music-app {
+  min-width: 0;
+}
+
+.music-app__panel {
+  min-width: 0;
+}
+
+.music-app__main {
+  width: 100%;
+}
+
+.music-app__record-wrap {
+  width: clamp(138px, 44vw, 190px);
+  height: clamp(138px, 44vw, 190px);
+}
+
+.music-app__record {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  flex: none;
+  transform: translateZ(0);
+  transform-origin: center;
+  image-rendering: pixelated;
+  user-select: none;
+  -webkit-user-drag: none;
+  animation: os-record-spin 7s linear infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+
+.music-app__record--playing {
+  animation-play-state: running;
+}
+
+@keyframes os-record-spin {
+  from {
+    transform: rotate(0deg) translateZ(0);
+  }
+  to {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
+
+.music-app__play {
+  width: 58px;
+  height: 38px;
+}
+
+.music-app__volume-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 14px;
+  margin: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.music-app__volume-slider::-webkit-slider-runnable-track {
+  height: 5px;
+  border: 1px solid var(--color-os-border-strong);
+  background: linear-gradient(
+    to right,
+    var(--color-os-accent) 0 var(--volume-progress),
+    var(--color-os-surface-2) var(--volume-progress) 100%
+  );
+}
+
+.music-app__volume-slider::-moz-range-track {
+  height: 5px;
+  border: 1px solid var(--color-os-border-strong);
+  background: var(--color-os-surface-2);
+}
+
+.music-app__volume-slider::-moz-range-progress {
+  height: 5px;
+  background: var(--color-os-accent);
+}
+
+.music-app__volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border: 2px solid var(--color-os-border-strong);
+  border-radius: 0;
+  background: var(--color-os-surface);
+  box-shadow: 2px 2px 0 rgba(43, 36, 56, 0.22);
+}
+
+.music-app__volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-os-border-strong);
+  border-radius: 0;
+  background: var(--color-os-surface);
+  box-shadow: 2px 2px 0 rgba(43, 36, 56, 0.22);
+}
+
+@media (max-width: 380px) {
+  .music-app {
+    padding: 4px;
+  }
+
+  .music-app__panel {
+    padding: 8px 10px;
+  }
+
+  .music-app__record-wrap {
+    width: 136px;
+    height: 136px;
+  }
+
+  .music-app__play {
+    width: 54px;
+    height: 36px;
+    margin-top: 6px;
+  }
+
+  .music-app__volume {
+    margin-top: 6px;
+  }
+
+  .music-app__discs {
+    padding-top: 6px;
+  }
+
+  .music-app__discs .mb-1 {
+    margin-bottom: 2px;
+  }
+
+  .music-app__discs .gap-2 {
+    gap: 6px;
+  }
+
+  .music-app__discs button > div {
+    width: 36px !important;
+    height: 36px !important;
+  }
 }

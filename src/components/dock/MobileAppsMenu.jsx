@@ -1,7 +1,7 @@
 import { getAllApps } from '../../core/appRuntime/appRegistry';
 import { useWindowStore } from '../../store/useWindowStore';
 import { useMobileUIStore } from '../../store/useMobileUIStore';
-import { DESKTOP_LOGOS } from '../desktop/desktopLogos';
+import { AppIcon } from '../../assets/appIcons';
 
 /**
  * The center dock button's destination: every registered app in a compact
@@ -40,7 +40,6 @@ export default function MobileAppsMenu() {
       >
         <div className="grid grid-cols-3 gap-3">
           {apps.map((app) => {
-            const Icon = DESKTOP_LOGOS[app.id] ?? app.icon;
             return (
               <button
                 key={app.id}
@@ -53,7 +52,7 @@ export default function MobileAppsMenu() {
                   style={{ borderRadius: 'var(--os-icon-radius)' }}
                   className="pixel-cut flex h-11 w-11 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window"
                 >
-                  {Icon ? <Icon size={26} className="h-[26px] w-[26px]" /> : null}
+                  <AppIcon appId={app.id} size={26} />
                 </span>
                 <span className="line-clamp-2 text-center font-display text-[8px] leading-tight text-os-ink">
                   {app.title}

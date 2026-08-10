@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Pause, Play, Volume1, Volume2 } from 'lucide-react';
+import recordImage from '../../assets/icons/record.webp';
 import { TRACKS } from './tracks';
 import { MusicEngine } from './MusicEngine';
 import Disk from './Disk';
 
 /**
- * Music UI — a simple pixel-art record player. The audio engine and its
- * lifecycle are UNCHANGED from before this phase: the engine is created
- * once per mount, kept alive across minimize (the window stays mounted
- * while minimized — see WindowFrame), and disposed on close/unmount. This
- * phase only changes what's rendered.
+ * Retro BrowserOS music player.
+ *
+ * The large record is the supplied record.webp asset. Its animation remains
+ * mounted at all times and only switches animation-play-state, so pausing and
+ * resuming continues from the exact rotational position where it stopped.
  */
 export default function MusicApp() {
   const engineRef = useRef(null);
@@ -17,23 +18,24 @@ export default function MusicApp() {
 
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.5);
 
   const track = TRACKS[trackIndex];
 
   useEffect(() => {
     const engine = engineRef.current;
 
-    // Automatically continue to the next real MP3 when a track finishes.
     engine.setEndedHandler(() => {
       setTrackIndex((current) => {
         const next = (current + 1) % TRACKS.length;
-        void engine.play(TRACKS[next]).then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+        void engine
+          .play(TRACKS[next])
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
         return next;
       });
     });
 
-    // IMPORTANT: this runs when the Music window is CLOSED. The WindowFrame
-    // keeps this component mounted while minimized, so audio keeps playing.
     return () => engine.dispose();
   }, []);
 
@@ -65,39 +67,84 @@ export default function MusicApp() {
     }
   };
 
+  const handleVolume = (event) => {
+    const nextVolume = Number(event.target.value);
+    setVolume(nextVolume);
+    engineRef.current.setVolume(nextVolume);
+  };
+
   return (
-    <div className="flex h-full flex-col items-center gap-3 overflow-auto p-4">
-      <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-4">
-        <Disk size="min(56%, 190px)" spinning={isPlaying} active />
+    <div className="music-app flex h-full w-full min-h-0 items-center justify-center overflow-hidden p-2 sm:p-3">
+      <div className="music-app__panel flex h-full min-h-0 w-full max-w-[430px] flex-col items-center justify-center overflow-hidden px-3 py-3 sm:px-5 sm:py-4">
+        <div className="music-app__main flex w-full flex-none flex-col items-center justify-center">
+          <div className="music-app__record-wrap flex shrink-0 items-center justify-center">
+            <img
+              src={recordImage}
+              alt=""
+              aria-hidden="true"
+              className={`music-app__record ${isPlaying ? 'music-app__record--playing' : ''}`}
+              style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
+            />
+          </div>
 
-        <span className="max-w-full truncate px-2 text-center font-display text-[13px] text-os-ink">
-          {track.title}
-        </span>
+          <div className="music-app__track mt-2 flex w-full min-h-0 flex-col items-center text-center">
+            <div className="music-app__title max-w-full truncate px-2 font-display text-[13px] leading-5 text-os-ink">
+              {track.title}
+            </div>
+            <div className="music-app__subtitle mt-0.5 font-mono text-[9px] leading-4 text-os-ink-soft">
+              Pixel Records. Stereo audio.
+            </div>
+          </div>
 
-        <button
-          type="button"
-          onClick={togglePlay}
-          className="pixel-cut flex h-14 w-14 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-accent text-os-accent-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
-          aria-label={isPlaying ? 'Pause' : 'Play'}
-        >
-          {isPlaying ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
-        </button>
-      </div>
-
-      <div className="flex w-full shrink-0 flex-wrap items-center justify-center gap-2.5 border-t-2 border-os-border pt-3">
-        {TRACKS.map((t, i) => (
           <button
-            key={t.id}
             type="button"
-            onClick={() => void playTrack(i)}
-            className="rounded-full transition-transform hover:-translate-y-0.5 active:translate-y-0"
-            aria-label={t.title}
-            aria-current={i === trackIndex ? 'true' : undefined}
-            title={t.title}
+            onClick={togglePlay}
+            className="pixel-cut music-app__play mt-2 flex shrink-0 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
           >
-            <Disk size={44} active={i === trackIndex} />
+            {isPlaying ? <Pause size={18} strokeWidth={2.5} /> : <Play size={18} strokeWidth={2.5} className="ml-0.5" />}
           </button>
-        ))}
+
+          <div className="music-app__volume mt-2 flex w-full max-w-[300px] items-center gap-2 px-1">
+            {volume === 0 ? (
+              <Volume1 size={15} className="shrink-0 text-os-ink-soft" aria-hidden="true" />
+            ) : (
+              <Volume2 size={15} className="shrink-0 text-os-ink-soft" aria-hidden="true" />
+            )}
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={handleVolume}
+              aria-label="Volume"
+              className="music-app__volume-slider min-w-0 flex-1"
+              style={{ '--volume-progress': `${volume * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="music-app__discs mt-2 w-full max-w-[320px] shrink-0 border-t-2 border-os-border pt-2">
+          <div className="mb-1 text-center font-display text-[8px] tracking-[0.16em] text-os-ink-soft">
+            DISCS
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            {TRACKS.map((t, i) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => void playTrack(i)}
+                className="shrink-0 rounded-full transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                aria-label={t.title}
+                aria-current={i === trackIndex ? 'true' : undefined}
+                title={t.title}
+              >
+                <Disk size={40} active={i === trackIndex} />
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

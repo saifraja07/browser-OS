@@ -8,12 +8,13 @@ import musicIcon from './icons/music.webp';
 import readmeIcon from './icons/readme.webp';
 import settingIcon from './icons/setting.webp';
 import terminalIcon from './icons/terminal.webp';
+import appsIcon from './icons/apps.webp';
 
 const ICONS = {
   about: aboutIcon, calculator: calculatorIcon, calendar: calendarIcon,
   community: communityIcon,
   explorer: explorerIcon, messages: messageIcon, music: musicIcon,
-  readme: readmeIcon, settings: settingIcon, terminal: terminalIcon,
+  readme: readmeIcon, settings: settingIcon, terminal: terminalIcon, apps: appsIcon,
 };
 
 /**
