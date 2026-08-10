@@ -86,4 +86,13 @@ registerApps([
     minSize: { width: 380, height: 340 },
     singleInstance: true,
   },
+  {
+    id: 'community',
+    title: 'Community',
+    icon: (props) => <AppIcon appId="community" {...props} />,
+    component: () => import('./community/CommunityApp'),
+    defaultSize: { width: 420, height: 520 },
+    minSize: { width: 320, height: 400 },
+    singleInstance: true,
+  },
 ]);
