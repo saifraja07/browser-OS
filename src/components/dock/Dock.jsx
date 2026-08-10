@@ -16,7 +16,7 @@ export default function Dock() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.15 }}
-      className="os-dock rounded-[12px] fixed bottom-4 left-1/2 z-[var(--z-navbar)] flex -translate-x-1/2 items-end gap-[var(--os-dock-gap)] border-[length:var(--os-border-width)] border-os-border-strong bg-transparent px-4 py-2.5 backdrop-blur-sm shadow-os-window"
+      className="os-dock rounded-xl fixed bottom-4 left-1/2 z-(--z-navbar) flex -translate-x-1/2 items-end gap-[var(--os-dock-gap)] border-[length:var(--os-border-width)] border-os-border-strong bg-transparent px-4 py-2.5 backdrop-blur-sm shadow-os-window"
       aria-label="Application dock"
     >
       {apps.map((app) => (

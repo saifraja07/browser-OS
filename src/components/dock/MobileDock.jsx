@@ -24,7 +24,7 @@ export default function MobileDock() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.15 }}
-      className="os-dock rounded-[12px] pixel-cut fixed left-1/2 z-[var(--z-navbar)] flex -translate-x-1/2 items-center gap-2 border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface/35 px-3 py-2 backdrop-blur-md shadow-os-window"
+      className="os-dock rounded-xl pixel-cut fixed left-1/2 z-(--z-navbar) flex -translate-x-1/2 items-center gap-2 border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface/35 px-3 py-2 backdrop-blur-md shadow-os-window"
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
       aria-label="Application dock"
     >
@@ -61,7 +61,7 @@ function MobilePrimaryButton({ appId }) {
       isActive={isActive}
       onClick={() => openApp(appId)}
     >
-      {Icon ? <Icon size={22} className="h-[22px] w-[22px]" /> : null}
+      {Icon ? <Icon size={22} className="h-5.5 w-5.5" /> : null}
     </MobileDockButton>
   );
 }
@@ -72,24 +72,24 @@ function MobileDockButton({ label, isActive, isRunning, onClick, children, ...re
       type="button"
       onClick={onClick}
       whileTap={{ scale: 0.9 }}
-      className="relative flex min-w-[52px] flex-col items-center gap-1 py-1"
+      className="relative flex min-w-13 flex-col items-center gap-1 py-1"
       aria-label={label}
       {...rest}
     >
       <span
         style={{ borderRadius: 'var(--os-icon-radius)' }}
-        className={`pixel-cut flex h-9 w-9 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong shadow-os-window transition-colors ${
+        className={`pixel-cut flex h-9 w-9 items-center justify-center border-(length:--os-border-width) border-os-border-strong shadow-os-window transition-colors ${
           isActive ? 'bg-os-accent text-os-accent-ink' : 'bg-os-surface/55 text-os-ink'
         }`}
       >
         {children}
       </span>
-      <span className="max-w-[56px] truncate font-display text-[7px] tracking-[var(--os-display-tracking)] text-os-ink-soft">
+      <span className="max-w-14 truncate font-display text-[7px] tracking-(--os-display-tracking) text-os-ink-soft">
         {label}
       </span>
       {isRunning ? (
         <span
-          className={`absolute -top-0.5 right-[14px] h-1.5 w-1.5 rounded-full ${
+          className={`absolute -top-0.5 right-3.5 h-1.5 w-1.5 rounded-full ${
             isActive ? 'bg-os-accent' : 'bg-os-ink-soft'
           }`}
         />
