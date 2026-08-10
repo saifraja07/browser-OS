@@ -75,7 +75,7 @@ export default function MusicApp() {
 
   return (
     <div className="music-app flex h-full w-full min-h-0 items-center justify-center overflow-hidden p-2 sm:p-3">
-      <div className="music-app__panel flex h-full min-h-0 w-full max-w-[430px] flex-col items-center justify-center overflow-hidden px-3 py-3 sm:px-5 sm:py-4">
+      <div className="music-app__panel flex h-full min-h-0 w-full max-w-107.5 flex-col items-center justify-center overflow-hidden px-3 py-3 sm:px-5 sm:py-4">
         <div className="music-app__main flex w-full flex-none flex-col items-center justify-center">
           <div className="music-app__record-wrap flex shrink-0 items-center justify-center">
             <img
@@ -99,7 +99,7 @@ export default function MusicApp() {
           <button
             type="button"
             onClick={togglePlay}
-            className="pixel-cut music-app__play mt-2 flex shrink-0 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
+            className="pixel-cut music-app__play mt-2 flex shrink-0 items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? <Pause size={18} strokeWidth={2.5} /> : <Play size={18} strokeWidth={2.5} className="ml-0.5" />}

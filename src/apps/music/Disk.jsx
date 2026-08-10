@@ -9,7 +9,7 @@ export default function Disk({ size = 44, active = false, className = '' }) {
   return (
     <div
       aria-hidden="true"
-      className={`relative shrink-0 overflow-hidden rounded-full border-[length:var(--os-border-width)] bg-os-surface-2 shadow-os-window ${
+      className={`relative shrink-0 overflow-hidden rounded-full border-(length:--os-border-width) bg-os-surface-2 shadow-os-window ${
         active ? 'border-os-accent' : 'border-os-border-strong'
       } ${className}`}
       style={{ width: size, height: size }}
@@ -18,7 +18,7 @@ export default function Disk({ size = 44, active = false, className = '' }) {
       <div className="absolute inset-[18%] rounded-full border-2 border-os-border/45" />
       <div className="absolute inset-[28%] rounded-full border-2 border-os-border/30" />
       <div
-        className={`absolute inset-[38%] rounded-full border-[length:var(--os-border-width)] border-os-border-strong ${
+        className={`absolute inset-[38%] rounded-full border-(length:--os-border-width) border-os-border-strong ${
           active ? 'bg-os-accent' : 'bg-os-surface'
         }`}
       />

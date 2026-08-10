@@ -12,7 +12,7 @@ export default function EmptyState({ searching = false }) {
         {searching ? 'No messages found.' : 'No messages yet.'}
       </p>
       {!searching && (
-        <p className="max-w-[220px] font-mono text-[9px] leading-relaxed text-os-ink-soft">
+        <p className="max-w-55 font-mono text-[9px] leading-relaxed text-os-ink-soft">
           Be the first to share something with the community.
         </p>
       )}

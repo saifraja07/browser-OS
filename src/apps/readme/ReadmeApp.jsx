@@ -32,7 +32,7 @@ export default function ReadmeApp() {
 
   return (
     <div className="h-full overflow-auto bg-[#f5f2e8] p-4">
-      <pre className="m-0 whitespace-pre-wrap break-words font-mono text-[11px] leading-[1.6] text-black">
+      <pre className="m-0 whitespace-pre-wrap wrap-break-word font-mono text-[11px] leading-[1.6] text-black">
         {content}
       </pre>
     </div>

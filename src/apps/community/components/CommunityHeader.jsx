@@ -14,7 +14,7 @@ export default function CommunityHeader({ onNewPost }) {
         <button
           type="button"
           onClick={onNewPost}
-          className="pixel-cut inline-flex shrink-0 items-center gap-1 border-[length:var(--os-border-width)] border-os-border-strong bg-os-accent px-2.5 py-1.5 font-display text-[9px] text-os-accent-ink shadow-[0_2px_0_rgba(0,0,0,.15)] transition-transform hover:-translate-y-0.5 active:translate-y-0"
+          className="pixel-cut inline-flex shrink-0 items-center gap-1 border-(length:--os-border-width) border-os-border-strong bg-os-accent px-2.5 py-1.5 font-display text-[9px] text-os-accent-ink shadow-[0_2px_0_rgba(0,0,0,.15)] transition-transform hover:-translate-y-0.5 active:translate-y-0"
         >
           <Plus size={12} strokeWidth={3} aria-hidden="true" />
           New Post

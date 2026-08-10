@@ -325,11 +325,7 @@ button:focus-visible {
     height: 36px;
     margin-top: 6px;
   }
-
-  .music-app__volume {
-    /* margin-top: 6px; */
-  }
-
+  
   .music-app__discs {
     padding-top: 6px;
   }

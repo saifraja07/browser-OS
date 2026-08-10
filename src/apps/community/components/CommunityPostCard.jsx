@@ -37,7 +37,7 @@ export default function CommunityPostCard({ post }) {
 
           {/* Rendered as plain text (never dangerouslySetInnerHTML) so
               user-submitted content can never inject HTML/JS. */}
-          <p className="mt-1 whitespace-pre-wrap break-words font-mono text-[10px] leading-[1.5] text-os-ink">
+          <p className="mt-1 whitespace-pre-wrap wrap-break-word font-mono text-[10px] leading-[1.5] text-os-ink">
             {post.message}
           </p>
         </div>
