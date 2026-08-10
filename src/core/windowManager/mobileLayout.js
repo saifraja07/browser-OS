@@ -127,7 +127,7 @@ export function clampWindowToViewport(
  * that position into a much narrower mobile viewport — the same way
  * clampWindowToViewport does for drag — can leave most of the window
  * hanging off the right/bottom edge, which reads as "the app disappeared".
- * Fixed, non-resizable apps like Music/Calculator are hit hardest since
+ * Fixed, non-resizable apps like Music are hit hardest since
  * they can't be manually resized back into view afterward.
  *
  * So here: if the window already fits fully inside the new viewport as-is,
@@ -149,8 +149,7 @@ export function fitWindowToViewport(
 
   // Resizable windows keep their current (possibly user-resized) size and
   // only ever shrink here if they no longer fit — we don't second-guess a
-  // deliberate manual resize. Non-resizable windows (e.g. Music,
-  // Calculator) have no other way to adapt, so they scale continuously off
+  // deliberate manual resize. Non-resizable windows (e.g. Music) have no other way to adapt, so they scale continuously off
   // their authored "natural" size instead: shrinking when the viewport
   // gets tighter and growing back toward that natural size the moment more
   // room reappears (rotating to landscape, widening the browser, etc.) —

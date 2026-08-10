@@ -44,7 +44,7 @@ export function clampToDesktop(x, y) {
 
   // Shortcuts may move freely left/right and downward, but never above
   // the protected shortcut-row area directly below the navbar. This keeps
-  // dragged icons from crossing into the initial README/Music/Calculator
+  // dragged icons from crossing into the initial README/Music/Community
   // row on both desktop and mobile.
   const minY = NAVBAR_HEIGHT + DESKTOP_PADDING + DESKTOP_ICON_TOP_RESERVE;
 

@@ -6,7 +6,7 @@ export const STORAGE_KEY_MOBILE = 'browseros:desktop-icons:mobile';
 
 /** Apps that get a persistent desktop shortcut. */
 export const LEFT_SHORTCUT_APP_IDS = ['readme', 'settings', 'explorer'];
-export const RIGHT_SHORTCUT_APP_IDS = ['music', 'calculator'];
+export const RIGHT_SHORTCUT_APP_IDS = ['music', 'community'];
 export const DEFAULT_APP_IDS = [...LEFT_SHORTCUT_APP_IDS, ...RIGHT_SHORTCUT_APP_IDS];
 
 export const ICON_SIZE = { width: 76, height: 92 };
