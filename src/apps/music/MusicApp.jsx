@@ -126,7 +126,7 @@ export default function MusicApp() {
         </div>
 
        <div className="music-app__discs mt-0 w-full max-w-[320px] shrink-0 border-t-2 border-os-border pt-2">
-  <div className="mb-1 text-center font-display text-[8px] tracking-[0.16em] text-os-ink-soft">
+  <div className="my-3 text-center font-display text-[8px] tracking-[0.16em] text-os-ink-soft">
     DISCS
   </div>
 
