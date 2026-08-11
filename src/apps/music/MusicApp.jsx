@@ -92,7 +92,7 @@ export default function MusicApp() {
               {track.title}
             </div>
             <div className="music-app__subtitle mt-0.5 font-mono text-[9px] leading-4 text-os-ink-soft">
-              Spin The Good Stuff.
+              Minimize me, The Music keeps playing.
             </div>
           </div>
 
@@ -125,26 +125,33 @@ export default function MusicApp() {
           </div>
         </div>
 
-        <div className="music-app__discs mt-2 w-full max-w-[320px] shrink-0 border-t-2 border-os-border pt-2">
-          <div className="mb-1 text-center font-display text-[8px] tracking-[0.16em] text-os-ink-soft">
-            DISCS
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            {TRACKS.map((t, i) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => void playTrack(i)}
-                className="shrink-0 rounded-full transition-transform hover:-translate-y-0.5 active:translate-y-0"
-                aria-label={t.title}
-                aria-current={i === trackIndex ? 'true' : undefined}
-                title={t.title}
-              >
-                <Disk size={40} active={i === trackIndex} />
-              </button>
-            ))}
-          </div>
-        </div>
+       <div className="music-app__discs mt-0 w-full max-w-[320px] shrink-0 border-t-2 border-os-border pt-2">
+  <div className="mb-1 text-center font-display text-[8px] tracking-[0.16em] text-os-ink-soft">
+    DISCS
+  </div>
+
+  <div className="flex items-center justify-center gap-2">
+    {TRACKS.map((t, i) => {
+      const isSelected = i === trackIndex;
+
+      return (
+        <button
+          key={t.id}
+          type="button"
+          onClick={() => void playTrack(i)}
+          className={`relative flex h-10 w-10 shrink-0 items-center justify-center transition-transform hover:-translate-y-0.5 active:translate-y-0 ${
+            isSelected ? 'bg-black' : 'bg-transparent'
+          }`}
+          aria-label={t.title}
+          aria-current={isSelected ? 'true' : undefined}
+          title={t.title}
+        >
+          <Disk size={40} active={false} />
+        </button>
+      );
+    })}
+  </div>
+</div>
       </div>
     </div>
   );
