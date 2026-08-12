@@ -20,19 +20,19 @@ function fmtBytes(bytes = 0) {
 }
 
 export const COMMANDS = {
-help: {
-  usage: 'help',
-  description: 'List available commands',
+  help: {
+    usage: "help",
+    description: "List available commands",
 
-  run: async () =>
-    Object.entries(COMMANDS)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([, cmd]) => ({
-        type: 'help',
-        usage: cmd.usage,
-        description: cmd.description,
-      })),
-},
+    run: async () =>
+      Object.entries(COMMANDS)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, cmd]) => ({
+          type: "help",
+          usage: cmd.usage,
+          description: cmd.description,
+        })),
+  },
 
   pwd: {
     usage: 'pwd',
@@ -190,7 +190,7 @@ help: {
     run: async (args, ctx) =>
       ctx.listApps().map((app) => `${app.title}`),
   },
-  
+
   open: {
     usage: 'open <appId>',
     description: 'Launch an app by id',
