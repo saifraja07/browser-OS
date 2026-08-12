@@ -226,6 +226,6 @@ Choose a license appropriate for your project before publishing it publicly.
 
 ## Author
 
-**Haadi**
+**Saif Ali**
 
 BrowserOS is a project exploring how far a desktop-like operating system experience can be built inside a web browser.
