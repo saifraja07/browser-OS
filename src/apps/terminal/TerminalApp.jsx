@@ -40,17 +40,29 @@ export default function TerminalApp() {
     clear: () => setLines([]),
   });
 
+  const getPrompt = () =>
+    cwd === "/" ? "haadi@browserOS:~$" : `haadi@browserOS:${cwd}$`;
+
   const runCommand = async (raw) => {
-    const prompt = `${cwd} $ ${raw}`;
+    const prompt = `${getPrompt()} ${raw}`;
     setLines((prev) => [...prev, { type: "input", text: prompt }]);
 
     const { lines: output, isError } = await executeLine(raw, buildCtx());
     if (output.length > 0) {
-      setLines((prev) => [
-        ...prev,
-        ...output.map((text) => ({ type: isError ? "error" : "output", text })),
-      ]);
-    }
+  setLines((prev) => [
+    ...prev,
+    ...output.map((item) => {
+      if (!isError && item?.type === "help") {
+        return item;
+      }
+
+      return {
+        type: isError ? "error" : "output",
+        text: String(item),
+      };
+    }),
+  ]);
+}
   };
 
   const handleKeyDown = async (e) => {
@@ -93,26 +105,58 @@ export default function TerminalApp() {
   return (
     <div
       onClick={focusInput}
-      className="flex h-full flex-col bg-[#161320] p-3 font-mono text-[13px] text-[#e8e4f5]"
+      className="flex h-full min-w-0 flex-col overflow-hidden bg-[#161320] p-3 font-mono text-[13px] text-[#e8e4f5]"
     >
-      <div ref={scrollRef} className="flex-1 overflow-auto">
-        {lines.map((line, i) => (
-          <div
-            key={i}
-            className={`whitespace-pre-wrap ${
-              line.type === "input"
-                ? "text-[rgb(111,207,151)]"
-                : line.type === "error"
-                  ? "text-[#ff6b8b]"
-                  : "text-[#e8e4f5]/90"
-            }`}
-          >
-            {line.text}
-          </div>
-        ))}
+      <div
+  ref={scrollRef}
+  className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
+>
+      {lines.map((line, i) => {
+  if (line.type === "help") {
+    return (
+      <div
+        key={i}
+        className="
+          grid
+          grid-cols-[24ch_minmax(0,1fr)]
+          max-[640px]:grid-cols-[16ch_minmax(0,1fr)]
+          gap-x-3
+          items-start
+          min-w-0
+          w-full
+        "
+      >
+        <span className="min-w-0 break-words">
+          {line.usage}
+        </span>
+
+        <span className="min-w-0 break-words">
+          {line.description}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      key={i}
+      className={`whitespace-pre-wrap wrap-break-word min-w-0 ${
+        line.type === "input"
+          ? "text-[rgb(111,207,151)]"
+          : line.type === "error"
+            ? "text-[#ff6b8b]"
+            : "text-[#e8e4f5]/90"
+      }`}
+    >
+      {line.text}
+    </div>
+  );
+})}
 
         <div className="flex items-center gap-2">
-          <span className="shrink-0 text-[rgb(111,207,151)]">{cwd} $</span>
+          <span className="shrink-0 text-[rgb(111,207,151)]">
+            {getPrompt()}
+          </span>
           <input
             ref={inputRef}
             autoFocus

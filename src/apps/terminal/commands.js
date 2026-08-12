@@ -20,14 +20,19 @@ function fmtBytes(bytes = 0) {
 }
 
 export const COMMANDS = {
-  help: {
-    usage: 'help',
-    description: 'List available commands',
-    run: async () =>
-      Object.entries(COMMANDS)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([name, cmd]) => `  ${cmd.usage.padEnd(24)} ${cmd.description}`),
-  },
+help: {
+  usage: 'help',
+  description: 'List available commands',
+
+  run: async () =>
+    Object.entries(COMMANDS)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, cmd]) => ({
+        type: 'help',
+        usage: cmd.usage,
+        description: cmd.description,
+      })),
+},
 
   pwd: {
     usage: 'pwd',
@@ -170,13 +175,22 @@ export const COMMANDS = {
     },
   },
 
+  cls: {
+    usage: 'clear',
+    description: 'Clear the terminal',
+    run: async (args, ctx) => {
+      ctx.clear();
+      return [];
+    },
+  },
+
   apps: {
     usage: 'apps',
     description: 'List installed apps',
     run: async (args, ctx) =>
-      ctx.listApps().map((app) => `  ${app.id.padEnd(16)} ${app.title}`),
+      ctx.listApps().map((app) => `${app.title}`),
   },
-
+  
   open: {
     usage: 'open <appId>',
     description: 'Launch an app by id',
@@ -223,7 +237,7 @@ export const COMMANDS = {
   whoami: {
     usage: 'whoami',
     description: 'Print the current user',
-    run: async () => ['guest@browseros'],
+    run: async () => ['haadi@browserOS\nCurrently between things'],
   },
 
   hostname: {
