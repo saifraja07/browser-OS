@@ -1,4 +1,3 @@
-import { useShallow } from 'zustand/react/shallow';
 import { getApp } from '../../core/appRuntime/appRegistry';
 import { useWindowStore } from '../../store/useWindowStore';
 import { useDesktopIconStore, selectIconPosition } from '../../store/useDesktopIconStore';
@@ -23,14 +22,6 @@ export default function DesktopIcon({ appId, isMobile = false }) {
   const manifest = getApp(appId);
   const position = useDesktopIconStore(selectIconPosition(appId));
   const openApp = useWindowStore((s) => s.openApp);
-  const { isActive } = useWindowStore(
-    useShallow((state) => ({
-      isActive: Object.values(state.windows).some(
-        (w) => w.appId === appId && w.id === state.focusedId && !w.isMinimized
-      ),
-    }))
-  );
-
   const handleOpen = () => openApp(appId);
   const { onPointerDown, onPointerMove, onPointerUp, onPointerCancel } = useDesktopIconDrag(
     appId,
@@ -52,13 +43,10 @@ export default function DesktopIcon({ appId, isMobile = false }) {
       style={{ position: 'absolute', left: position.x, top: position.y, touchAction: 'none', width: size.container }}
       className="group flex cursor-pointer flex-col items-center gap-1.5 rounded-[var(--os-radius-sm)] p-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-os-accent"
       aria-label={manifest.title}
-      aria-pressed={isActive}
     >
       <span
         style={{ width: size.shell, height: size.shell, borderRadius: 'var(--os-icon-radius)' }}
-        className={`pixel-cut flex items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong shadow-os-window transition-transform transition-shadow duration-150 group-hover:-translate-y-0.5 group-hover:shadow-os-window-focused ${
-          isActive ? 'bg-os-accent text-os-accent-ink' : 'bg-os-surface/90 text-os-ink'
-        }`}
+        className="pixel-cut flex items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface/90 text-os-ink shadow-os-window transition-transform transition-shadow duration-150 group-hover:-translate-y-0.5 group-hover:shadow-os-window-focused"
       >
         {Icon ? <Icon size={size.icon} className={size.iconBox} /> : null}
       </span>

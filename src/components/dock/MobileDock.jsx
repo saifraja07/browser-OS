@@ -45,18 +45,14 @@ function MobilePrimaryButton({ appId }) {
   const manifest = getApp(appId);
   const openApp = useWindowStore((s) => s.openApp);
   const windows = useWindowStore((s) => s.windows);
-  const focusedId = useWindowStore((s) => s.focusedId);
 
   if (!manifest) return null;
 
   const isRunning = Object.values(windows).some((w) => w.appId === appId);
-  const isActive = Object.values(windows).some((w) => w.id === focusedId && w.appId === appId);
-
   return (
     <MobileDockButton
       label={manifest.title}
       isRunning={isRunning}
-      isActive={isActive}
       onClick={() => openApp(appId)}
     >
       <AppIcon appId={appId} size={22} />
@@ -64,7 +60,7 @@ function MobilePrimaryButton({ appId }) {
   );
 }
 
-function MobileDockButton({ label, isActive, isRunning, onClick, children, ...rest }) {
+function MobileDockButton({ label, isRunning, onClick, children, ...rest }) {
   return (
     <motion.button
       type="button"
@@ -77,7 +73,7 @@ function MobileDockButton({ label, isActive, isRunning, onClick, children, ...re
       <span
         style={{ borderRadius: 'var(--os-icon-radius)' }}
         className={`pixel-cut flex h-9 w-9 items-center justify-center border-(length:--os-border-width) border-os-border-strong shadow-os-window transition-colors ${
-          isActive ? 'bg-os-accent text-os-accent-ink' : 'bg-os-surface/55 text-os-ink'
+          'bg-os-surface/55 text-os-ink'
         }`}
       >
         {children}
@@ -88,7 +84,7 @@ function MobileDockButton({ label, isActive, isRunning, onClick, children, ...re
       {isRunning ? (
         <span
           className={`absolute -top-0.5 right-3.5 h-1.5 w-1.5 rounded-full ${
-            isActive ? 'bg-os-accent' : 'bg-os-ink-soft'
+            'bg-os-ink-soft'
           }`}
         />
       ) : null}
