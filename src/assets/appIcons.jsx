@@ -2,6 +2,7 @@ import calculatorIcon from './icons/calculator.webp';
 import calendarIcon from './icons/calendar.webp';
 import communityIcon from './icons/community.webp';
 import explorerIcon from './icons/explorer.webp';
+import internetIcon from './icons/internet.webp';
 import messageIcon from './icons/message.webp';
 import musicIcon from './icons/music.webp';
 import readmeIcon from './icons/readme.webp';
@@ -12,7 +13,7 @@ import appsIcon from './icons/apps.webp';
 const ICONS = {
   calculator: calculatorIcon, calendar: calendarIcon,
   community: communityIcon,
-  explorer: explorerIcon, messages: messageIcon, music: musicIcon,
+  explorer: explorerIcon, internet: internetIcon, messages: messageIcon, music: musicIcon,
   readme: readmeIcon, settings: settingIcon, terminal: terminalIcon, apps: appsIcon,
 };
 

@@ -17,7 +17,9 @@ export default function MobileAppsMenu() {
 
   if (!isOpen) return null;
 
-  const apps = getAllApps();
+  // README keeps its desktop shortcut, but is intentionally hidden from
+  // the mobile All Apps menu. It remains registered and available elsewhere.
+  const apps = getAllApps().filter((app) => app.id !== 'readme');
 
   const handleOpenApp = (appId) => {
     openApp(appId);

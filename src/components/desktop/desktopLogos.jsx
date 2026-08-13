@@ -2,6 +2,7 @@ import { AppIcon } from '../../assets/appIcons';
 
 export const DESKTOP_LOGOS = {
   explorer: (props) => <AppIcon appId="explorer" {...props} />,
+  internet: (props) => <AppIcon appId="internet" {...props} />,
   calculator: (props) => <AppIcon appId="calculator" {...props} />,
   music: (props) => <AppIcon appId="music" {...props} />,
   settings: (props) => <AppIcon appId="settings" {...props} />,
