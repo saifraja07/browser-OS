@@ -4,9 +4,9 @@ import { useInternetHistory } from "./useInternetHistory";
 import InternetErrorState from "./InternetErrorState";
 
 const recentSites = [
-  "http://browser-os-one.vercel.app",
-  "http://listen2gold.vercel.app",
-  "http://mirhaadi.in",
+  "https://browser-os-one.vercel.app",
+  "https://listen2gold.vercel.app",
+  "https://mirhaadi.in",
 ];
 
 /**
