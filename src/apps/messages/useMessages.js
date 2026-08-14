@@ -4,6 +4,7 @@ import { notify } from '../../store/useNotificationStore';
 import { CONTACTS, getConversationStep } from './contacts';
 
 const MESSAGES_PATH = '/System/messages-v2.json';
+const MESSAGE_STATE_VERSION = 3;
 let idCounter = 0;
 
 const generateId = () => `msg_${Date.now()}_${idCounter++}`;
@@ -17,16 +18,16 @@ function createSeedState() {
 
     threads[contact.id] = opening
       ? [
-          {
-            id: generateId(),
-            from: 'them',
-            text: opening.text,
-            ts: Date.now(),
-          },
-        ]
+        {
+          id: generateId(),
+          from: 'them',
+          text: opening.text,
+          ts: Date.now(),
+        },
+      ]
       : [];
 
-    progress[contact.id] = 0;
+    progress[contact.id] = opening?.id ?? null;
   });
 
   return { threads, progress };
@@ -35,21 +36,34 @@ function createSeedState() {
 function normalizeStoredState(parsed) {
   if (
     parsed &&
-    parsed.version === 2 &&
+    parsed.version === MESSAGE_STATE_VERSION &&
     parsed.threads &&
     parsed.progress
   ) {
     const seeded = createSeedState();
 
+    const normalizedProgress = { ...seeded.progress };
+
+    CONTACTS.forEach((contact) => {
+      const storedNode = parsed.progress[contact.id];
+      const validNode =
+        storedNode === null ||
+        typeof storedNode === 'string' &&
+        Boolean(getConversationStep(contact.id, storedNode));
+
+      normalizedProgress[contact.id] = validNode
+        ? storedNode
+        : seeded.progress[contact.id];
+    });
+
     return {
       threads: { ...seeded.threads, ...parsed.threads },
-      progress: { ...seeded.progress, ...parsed.progress },
+      progress: normalizedProgress,
     };
   }
 
-  // The previous Messages app used a different storage format.
-  // Start the new branching conversation system in its own file so
-  // existing local data is never destroyed.
+  // Version 2 used numeric progress. Reset it into the new node-based
+  // branching format rather than trying to reinterpret old conversation state.
   return createSeedState();
 }
 
@@ -77,11 +91,14 @@ export function useMessages() {
 
         const initial = createSeedState();
         const stored = {
-          version: 2,
+          version: MESSAGE_STATE_VERSION,
           ...initial,
         };
 
-        await virtualFS.writeFile(MESSAGES_PATH, JSON.stringify(stored, null, 2));
+        await virtualFS.writeFile(
+          MESSAGES_PATH,
+          JSON.stringify(stored, null, 2)
+        );
       }
 
       const raw = await virtualFS.readFile(MESSAGES_PATH);
@@ -95,13 +112,14 @@ export function useMessages() {
           setThreadsByContact(normalized.threads);
           setProgressByContact(normalized.progress);
 
-          // Persist normalized state if the file was created from an older shape.
-          if (parsed?.version !== 2) {
+          // Migrate old numeric-progress data (or malformed state) into the
+          // node-based branching format.
+          if (parsed?.version !== MESSAGE_STATE_VERSION) {
             await virtualFS.writeFile(
               MESSAGES_PATH,
               JSON.stringify(
                 {
-                  version: 2,
+                  version: MESSAGE_STATE_VERSION,
                   ...normalized,
                 },
                 null,
@@ -119,7 +137,7 @@ export function useMessages() {
             MESSAGES_PATH,
             JSON.stringify(
               {
-                version: 2,
+                version: MESSAGE_STATE_VERSION,
                 ...initial,
               },
               null,
@@ -146,7 +164,7 @@ export function useMessages() {
       MESSAGES_PATH,
       JSON.stringify(
         {
-          version: 2,
+          version: MESSAGE_STATE_VERSION,
           threads: nextThreads,
           progress: nextProgress,
         },
@@ -156,30 +174,12 @@ export function useMessages() {
     );
   }, []);
 
-  const appendMessage = useCallback(
-    (contactId, message) => {
-      const nextThreads = {
-        ...threadsRef.current,
-        [contactId]: [
-          ...(threadsRef.current[contactId] ?? []),
-          message,
-        ],
-      };
-
-      syncRefs(nextThreads, progressRef.current);
-      setThreadsByContact(nextThreads);
-
-      return nextThreads;
-    },
-    []
-  );
-
   const sendMessage = useCallback(
     (contactId, optionIndex, contactName) => {
       if (pendingRef.current === contactId) return;
 
-      const currentStepIndex = progressRef.current[contactId] ?? 0;
-      const step = getConversationStep(contactId, currentStepIndex);
+      const currentNodeId = progressRef.current[contactId];
+      const step = getConversationStep(contactId, currentNodeId);
 
       if (!step || !step.options?.[optionIndex]) return;
 
@@ -209,10 +209,10 @@ export function useMessages() {
       const delay = 700 + Math.random() * 850;
 
       window.setTimeout(async () => {
-        const nextStepIndex = currentStepIndex + 1;
+        const nextNodeId = selectedOption.next ?? null;
         const nextProgress = {
           ...progressRef.current,
-          [contactId]: nextStepIndex,
+          [contactId]: nextNodeId,
         };
 
         let finalThreads = threadsRef.current;
@@ -234,22 +234,7 @@ export function useMessages() {
           };
         }
 
-        syncRefs(finalThreads, nextProgress);
-        setThreadsByContact(finalThreads);
-        setProgressByContact(nextProgress);
-
-        await virtualFS.writeFile(
-          MESSAGES_PATH,
-          JSON.stringify(
-            {
-              version: 2,
-              threads: finalThreads,
-              progress: nextProgress,
-            },
-            null,
-            2
-          )
-        );
+        await persist(finalThreads, nextProgress);
 
         pendingRef.current = null;
         setPendingContactId(null);
@@ -262,7 +247,7 @@ export function useMessages() {
         }
       }, delay);
     },
-    []
+    [persist]
   );
 
   return {

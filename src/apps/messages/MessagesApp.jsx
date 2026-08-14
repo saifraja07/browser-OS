@@ -17,7 +17,7 @@ export default function MessagesApp() {
 
   const contact = CONTACTS.find((item) => item.id === selectedId);
   const messages = selectedId ? threadsByContact[selectedId] ?? [] : [];
-  const progress = selectedId ? progressByContact[selectedId] ?? 0 : 0;
+  const progress = selectedId ? progressByContact[selectedId] ?? null : null;
 
   if (loading) {
     return (
