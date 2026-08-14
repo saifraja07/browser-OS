@@ -29,20 +29,41 @@ export default function ThreadView({
   onBack,
 }) {
   const scrollRef = useRef(null);
+  const bottomRef = useRef(null);
 
   const currentStep = getConversationStep(contact.id, progress);
   const conversationEnded =
     !currentStep || progress >= contact.conversation.length;
 
+  // Keep the newest content visible whenever a message is added OR the
+  // typing indicator appears. The scroll target is placed after the typing
+  // indicator, so the indicator itself is always visible at the bottom.
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
+    const scrollToBottom = (behavior = "smooth") => {
+      if (!scrollRef.current) return;
+
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior,
+      });
+    };
+
+    const frame = window.requestAnimationFrame(() => scrollToBottom());
+
+    // Framer Motion can add the typing indicator after the first layout
+    // pass, so do one more scroll on the next frame.
+    const secondFrame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => scrollToBottom("smooth"));
     });
-  }, [messages, pending]);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(secondFrame);
+    };
+  }, [messages.length, pending]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-os-surface text-os-ink">
+    <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-os-surface text-os-ink">
       {/* Header */}
       <div className="relative shrink-0 border-b-2 border-os-border bg-os-surface-2 px-3 py-2 text-center">
         <button
@@ -74,7 +95,7 @@ export default function ThreadView({
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 overscroll-contain">
         <div className="flex flex-col gap-3">
           <AnimatePresence initial={false}>
             {messages.map((message, index) => {
@@ -124,11 +145,13 @@ export default function ThreadView({
               </div>
             </motion.div>
           )}
+
+          <div ref={bottomRef} className="h-px shrink-0" aria-hidden="true" />
         </div>
       </div>
 
       {/* Reply box - always stays at bottom */}
-      <div className="shrink-0 border-t-2 border-os-border bg-os-surface-2 p-2">
+      <div className="relative z-10 shrink-0 border-t-2 border-os-border bg-os-surface-2 p-2 shadow-[0_-2px_0_rgba(0,0,0,.04)]">
         {conversationEnded ? (
           <div className="flex h-9 items-center justify-center rounded-full border-2 border-os-border-strong bg-os-surface px-3 font-mono text-[9px] uppercase tracking-[0.12em] text-os-ink-soft">
             Conversation ended

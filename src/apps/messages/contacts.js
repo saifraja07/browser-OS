@@ -16,7 +16,7 @@
 export const CONTACTS = [
   {
     id: 'green miles',
-    name: 'Miles',
+    name: 'Green Miles',
     tagline: 'Investment desk',
     color: '#8b6b4a',
     avatar: '🧑🏻‍💼',

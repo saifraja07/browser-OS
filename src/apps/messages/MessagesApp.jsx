@@ -29,7 +29,7 @@ export default function MessagesApp() {
 
   if (!contact) {
     return (
-      <div className="flex h-full flex-col">
+      <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
         <ContactList
           contacts={CONTACTS}
           threadsByContact={threadsByContact}
