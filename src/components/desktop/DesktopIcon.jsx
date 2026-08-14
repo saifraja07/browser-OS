@@ -6,19 +6,29 @@ import {
 } from "../../store/useDesktopIconStore";
 import { useDesktopIconDrag } from "../../hooks/useDesktopIconDrag";
 import { DESKTOP_LOGOS } from "./desktopLogos";
-import { ICON_SIZE, ICON_SIZE_MOBILE } from "../../core/desktopIcons/constants";
 
-/** Same icon, same styling as desktop — just sized down to fit smaller screens. */
+/**
+ * Same icon, same styling as desktop — just sized down to fit smaller
+ * screens. `container` here is the actual tappable button width, kept
+ * snug around `shell` (the visible icon square) rather than reusing the
+ * wider grid-spacing constants from desktopIcons/constants.js (ICON_SIZE /
+ * ICON_SIZE_MOBILE) — those exist purely to keep icons from overlapping
+ * each other in the default layout and were never meant to define how big
+ * the clickable area should be. Reusing them here meant tapping well
+ * outside the visible icon (and its label) still opened the app. 48px
+ * (mobile) / 60px (desktop) still comfortably clears standard touch-target
+ * guidance (Apple ~44pt, Material 48dp) without the extra dead margin.
+ */
 const SIZES = {
   desktop: {
-    container: ICON_SIZE.width,
+    container: 60,
     shell: 44,
     icon: 34,
     iconBox: "h-8 w-8",
     label: "text-[9px]",
   },
   mobile: {
-    container: ICON_SIZE_MOBILE.width,
+    container: 48,
     shell: 36,
     icon: 26,
     iconBox: "h-[26px] w-[26px]",
@@ -60,7 +70,7 @@ export default function DesktopIcon({ appId, isMobile = false }) {
         touchAction: "none",
         width: size.container,
       }}
-      className="group flex cursor-pointer flex-col items-center gap-1.5 rounded-(--os-radius-sm) p-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-os-accent"
+      className="group flex cursor-pointer flex-col items-center gap-1 rounded-(--os-radius-sm) p-0.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-os-accent"
       aria-label={manifest.title}
     >
       <span
