@@ -36,8 +36,8 @@ registerApps([
     title: 'Settings',
     icon: (props) => <AppIcon appId="settings" {...props} />,
     component: () => import('./settings/SettingsApp'),
-    defaultSize: { width: 460, height: 380 },
-    minSize: { width: 400, height: 320 },
+    defaultSize: { width: 480, height: 430 },
+    minSize: { width: 320, height: 420 },
     singleInstance: true,
   },
   {
