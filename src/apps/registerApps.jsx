@@ -91,7 +91,7 @@ registerApps([
     title: 'Internet',
     icon: (props) => <AppIcon appId="internet" {...props} />,
     component: () => import('./internet/InternetApp'),
-    defaultSize: { width: 560, height: 420 },
+    defaultSize: { width: 560, height: 480 },
     minSize: { width: 320, height: 400 },
     singleInstance: true,
   },
