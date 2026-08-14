@@ -36,6 +36,18 @@ Users can read and create guestbook posts.
 - The Edge Function validates, normalizes, moderates, rate-limits, and inserts posts.
 - The Supabase service-role key stays on the server and is never exposed to the browser.
 
+### Internet (browser + search)
+
+The Internet app is an iframe-based browser with address-bar navigation.
+The address bar also doubles as a search box: input is classified as
+either a URL (navigates as before) or a search query (calls
+`searchInternet()`, which hits BrowserOS's own backend —
+`GET /internet/search?q=<query>` — never a search provider directly). See
+`aws/internet-search/` for the backend (AWS API Gateway → AWS Lambda →
+Jina Search) and `src/apps/internet/internetSearchService.js` for the
+frontend client. Results are currently shown in a minimal, temporary list
+pending a real results design.
+
 ## Tech Stack
 
 - React
@@ -61,9 +73,10 @@ cd browserOS
 npm install
 ```
 
-### 3. Configure Supabase
+### 3. Configure Supabase and Internet search
 
-Community is optional. The rest of BrowserOS works without it.
+Community and Internet search are both optional. The rest of BrowserOS
+works without either.
 
 Copy the example environment file:
 
@@ -79,6 +92,17 @@ VITE_SUPABASE_ANON_KEY=your-anon-public-key
 ```
 
 Never put the Supabase `service_role` key in frontend environment variables.
+
+To enable Internet search, add the deployed API URL from
+`aws/internet-search/` (see that directory's README to deploy it first):
+
+```env
+VITE_BROWSEROS_API_URL=https://your-api-id.execute-api.your-region.amazonaws.com
+```
+
+This is a public URL, not a secret. The search-provider API key stays
+server-side in the Lambda and must never be added to a frontend `.env`
+file.
 
 ### 4. Set up the Community database
 
@@ -180,6 +204,8 @@ browserOS/
 ├── supabase/
 │   ├── migrations/
 │   └── functions/
+├── aws/
+│   └── internet-search/
 ├── package.json
 ├── vite.config.js
 ├── .env.example

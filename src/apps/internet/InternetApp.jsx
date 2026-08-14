@@ -1,35 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, RotateCw, Home, ArrowRight, Globe } from "lucide-react";
 import { useInternetHistory } from "./useInternetHistory";
-import InternetErrorState from "./InternetErrorState";
+import { useInternetSearch } from "./useInternetSearch";
+import { isLikelyUrl } from "./normalizeUrl";
+import InternetErrorState from "./components/InternetErrorState";
+import InternetSearchResults from "./components/InternetSearchResults";
 
 const recentSites = [
   "https://browser-os-one.vercel.app",
-  "https://listen2gold.vercel.app",
+  "https://berojgaryuva.vercel.app",
   "https://mirhaadi.in",
 ];
 
-/**
- * Internet — a very small retro web browser.
- *
- * Phase 5 (this file): custom error/fallback UI. When a page can't be
- * confirmed to have loaded — whether from a genuine network error or a
- * site refusing to be embedded (CSP/X-Frame-Options, which this app never
- * attempts to bypass) — the iframe is swapped for a local BrowserOS-styled
- * error view instead of leaving a blank/broken pane. The toolbar (Back,
- * Reload, Home, the address input, Go) stays fully usable throughout.
- */
+
 export default function InternetApp() {
   const [inputUrl, setInputUrl] = useState("");
   const inputRef = useRef(null);
 
   const {
     currentUrl,
+    currentSearchQuery,
     canGoBack,
     loading,
     error,
     reloadKey,
     navigate,
+    navigateToSearch,
     goBack,
     reload,
     goHome,
@@ -37,10 +33,17 @@ export default function InternetApp() {
     handleLoadError,
   } = useInternetHistory();
 
-  // The address bar always mirrors whatever page is actually displayed.
+  const {
+    results: searchResults,
+    loading: searchLoading,
+    errorMessage: searchErrorMessage,
+  } = useInternetSearch(currentSearchQuery, reloadKey);
+
+  // The address bar always mirrors whatever the current history entry
+  // is — a page URL or a search query — and clears at the home state.
   useEffect(() => {
-    setInputUrl(currentUrl ?? "");
-  }, [currentUrl]);
+    setInputUrl(currentUrl ?? currentSearchQuery ?? "");
+  }, [currentUrl, currentSearchQuery]);
 
   const goTo = (rawInput) => {
     const normalized = navigate(rawInput);
@@ -50,16 +53,36 @@ export default function InternetApp() {
     }
   };
 
-  const handleGoClick = () => goTo(inputUrl);
+  /** Address-bar submission (Enter or Go): URLs navigate as before, anything else becomes a search history entry. */
+  const handleSubmit = (rawInput) => {
+    const trimmed = typeof rawInput === "string" ? rawInput.trim() : "";
+    if (!trimmed) return;
+
+    if (isLikelyUrl(trimmed)) {
+      goTo(trimmed);
+      return;
+    }
+
+    if (!navigateToSearch(trimmed)) {
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleGoClick = () => handleSubmit(inputUrl);
 
   const handleInputKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      goTo(inputUrl);
+      handleSubmit(inputUrl);
     }
   };
 
   const handleRecentSiteClick = (url) => {
+    setInputUrl(url);
+    goTo(url);
+  };
+
+  const handleSearchResultClick = (url) => {
     setInputUrl(url);
     goTo(url);
   };
@@ -81,7 +104,7 @@ export default function InternetApp() {
         <button
           type="button"
           onClick={reload}
-          disabled={!currentUrl}
+          disabled={!currentUrl && !currentSearchQuery}
           className="rounded p-1 text-os-ink-soft enabled:hover:bg-os-surface-2 enabled:hover:text-os-ink disabled:opacity-30"
           aria-label="Reload"
         >
@@ -102,7 +125,7 @@ export default function InternetApp() {
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
           onKeyDown={handleInputKeyDown}
-          placeholder="Enter address"
+          placeholder="Search or enter address"
           aria-label="Address"
           className="min-w-0 flex-1 rounded-lg border-2 border-os-border bg-os-surface px-2 py-1 font-mono text-[11px] text-os-ink outline-none focus:border-os-accent"
         />
@@ -119,7 +142,16 @@ export default function InternetApp() {
 
       {/* Content area */}
       <div className="relative min-h-0 flex-1 overflow-hidden bg-os-surface">
-        {currentUrl ? (
+        {currentSearchQuery ? (
+          <InternetSearchResults
+            query={currentSearchQuery}
+            loading={searchLoading}
+            errorMessage={searchErrorMessage}
+            results={searchResults}
+            onResultClick={handleSearchResultClick}
+            onRetry={reload}
+          />
+        ) : currentUrl ? (
           error ? (
             <InternetErrorState onRetry={reload} />
           ) : (
@@ -151,7 +183,7 @@ export default function InternetApp() {
             </p>
 
             <p className="max-w-55 font-mono text-[10px] leading-relaxed text-os-ink-soft">
-              Enter a website above to begin.
+              Enter a website or search above to begin.
             </p>
 
             {/* Recently viewed */}

@@ -41,7 +41,7 @@ export default function DesktopIcon({ appId, isMobile = false }) {
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerCancel}
       style={{ position: 'absolute', left: position.x, top: position.y, touchAction: 'none', width: size.container }}
-      className="group flex cursor-pointer flex-col items-center gap-1.5 rounded-[var(--os-radius-sm)] p-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-os-accent"
+      className="group flex cursor-pointer flex-col items-center gap-1.5 rounded-(--os-radius-sm) p-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-os-accent"
       aria-label={manifest.title}
     >
       <span

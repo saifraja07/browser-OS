@@ -1,19 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { normalizeUrl } from './normalizeUrl';
 
-/**
- * A blocked embed (CSP / X-Frame-Options) is, by design, something the
- * parent page usually cannot observe directly — the browser just never
- * finishes "loading" the blocked content, and `iframe.onerror` is not a
- * reliable signal for this (it's meant for network-level failures, and
- * plenty of browsers never fire it for a security-policy refusal either).
- * So this is a heuristic, not a guarantee: if nothing has reported success
- * within LOAD_TIMEOUT_MS, we treat it as failed. This can occasionally be
- * wrong in both directions (a slow-but-working site could time out; a
- * blocked site that still fires `load` for an empty frame could look like
- * it "succeeded") — there's no way to fully close that gap without
- * bypassing browser security, which this app deliberately does not do.
- */
 const LOAD_TIMEOUT_MS = 8000;
 
 /**
@@ -24,25 +11,44 @@ const LOAD_TIMEOUT_MS = 8000;
  * store: this state only ever matters to one running Internet window and
  * is never persisted.
  *
- * history / historyIndex behave like a standard browser stack:
- *   - navigate(url) truncates any "forward" entries past the current index
- *     before pushing the new entry (A → B → C, back to B, navigate to D
- *     discards C).
- *   - navigating to the same URL that's already current doesn't create a
- *     duplicate history entry, but does retry the load in place (like
- *     Reload) — useful for clicking Go again after a failed load.
- *   - reload() never touches history, it just bumps a remount key.
- *   - goHome() resets to the initial "no page loaded" state.
+ * A single stack (`history` / `historyIndex`) covers BOTH URL visits and
+ * search-results views — there is deliberately no second, parallel
+ * history for search (Phase 5). Each entry is either:
+ *   { type: 'url',    value: <normalized URL> }
+ *   { type: 'search', value: <trimmed query> }
+ *
+ * history / historyIndex otherwise behave like a standard browser stack:
+ *   - navigate(url) / navigateToSearch(query) both truncate any "forward"
+ *     entries past the current index before pushing the new entry
+ *     (A → B → C, back to B, navigate to D discards C) — regardless of
+ *     whether the entries being truncated/pushed are URLs or searches.
+ *   - re-submitting the same URL/query that's already current doesn't
+ *     create a duplicate history entry, but does retry in place (like
+ *     Reload) — useful for clicking Go again after a failed load, or
+ *     hitting Enter again on the same search.
+ *   - reload() never touches history, it just bumps a remount key that
+ *     both the iframe (for URL entries) and useInternetSearch (for search
+ *     entries, which re-fetches when it changes) key off of.
+ *   - goHome() resets to the initial "no page loaded" state, which also
+ *     naturally exits search — there's nothing search-specific to reset.
+ *
+ * `loading` / `error` are meaningful only for URL entries — they track
+ * the iframe's best-effort load-timeout heuristic (see LOAD_TIMEOUT_MS
+ * below) and are left alone by search navigation. Search's own
+ * loading/error state is owned entirely by useInternetSearch, driven by
+ * `currentSearchQuery` + `reloadKey` from this hook.
  */
 export function useInternetHistory() {
-  const [history, setHistory] = useState([]); // array of normalized URLs
+  const [history, setHistory] = useState([]); // array of { type: 'url' | 'search', value }
   const [historyIndex, setHistoryIndex] = useState(-1); // -1 === home/initial state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const timeoutRef = useRef(null);
 
-  const currentUrl = historyIndex >= 0 ? history[historyIndex] : null;
+  const currentEntry = historyIndex >= 0 ? history[historyIndex] : null;
+  const currentUrl = currentEntry?.type === 'url' ? currentEntry.value : null;
+  const currentSearchQuery = currentEntry?.type === 'search' ? currentEntry.value : null;
   const canGoBack = historyIndex > 0;
 
   const clearLoadTimeout = () => {
@@ -54,7 +60,8 @@ export function useInternetHistory() {
 
   // (Re)arm the failure-detection timeout every time the page we're
   // pointed at actually changes (new URL, reload, or the same URL
-  // resubmitted) — never on unrelated re-renders.
+  // resubmitted) — never on unrelated re-renders. This is a no-op while
+  // on a search entry, since currentUrl is null there.
   useEffect(() => {
     clearLoadTimeout();
     if (!currentUrl) return undefined;
@@ -84,25 +91,64 @@ export function useInternetHistory() {
       return normalized;
     }
 
-    setHistory((prev) => [...prev.slice(0, historyIndex + 1), normalized]);
+    setHistory((prev) => [
+      ...prev.slice(0, historyIndex + 1),
+      { type: 'url', value: normalized },
+    ]);
     setHistoryIndex((prev) => prev + 1);
     setError(false);
     setLoading(true);
     return normalized;
   };
 
-  const goBack = () => {
-    if (!canGoBack) return;
+  /** Trims and navigates to a search-results state for the given query. Returns the trimmed query, or null if it was empty (nothing happened). */
+  const navigateToSearch = (rawQuery) => {
+    const trimmed = typeof rawQuery === 'string' ? rawQuery.trim() : '';
+    if (!trimmed) return null;
+
+    // Same as navigate(): resubmitting the query already being viewed
+    // retries in place instead of pushing a duplicate entry.
+    if (trimmed === currentSearchQuery) {
+      setReloadKey((k) => k + 1);
+      return trimmed;
+    }
+
+    setHistory((prev) => [
+      ...prev.slice(0, historyIndex + 1),
+      { type: 'search', value: trimmed },
+    ]);
+    setHistoryIndex((prev) => prev + 1);
     setError(false);
-    setHistoryIndex((prev) => prev - 1);
-    setLoading(true);
+    return trimmed;
   };
 
-  /** Reloads the current page in place — no history change. Also used as "Retry" from the error state, since retrying is just reloading the same address. */
-  const reload = () => {
-    if (!currentUrl) return;
+  const goBack = () => {
+    if (!canGoBack) return;
+    const targetIndex = historyIndex - 1;
+    const targetEntry = history[targetIndex];
     setError(false);
-    setLoading(true);
+    // Only the iframe (URL entries) uses this loading flag; a search
+    // entry's loading state comes from useInternetSearch instead, and
+    // going back to one that was already fetched shows its cached
+    // results immediately rather than re-searching.
+    setLoading(targetEntry?.type === 'url');
+    setHistoryIndex(targetIndex);
+  };
+
+  /**
+   * Reloads the current entry in place — no history change. For a URL
+   * entry this remounts the iframe (existing behavior). For a search
+   * entry, useInternetSearch re-fetches because it watches this same
+   * reloadKey. Also used as "Retry" from both InternetErrorState and
+   * InternetSearchError, since retrying is just reloading the current
+   * entry.
+   */
+  const reload = () => {
+    if (!currentUrl && !currentSearchQuery) return;
+    if (currentUrl) {
+      setError(false);
+      setLoading(true);
+    }
     setReloadKey((k) => k + 1);
   };
 
@@ -130,11 +176,13 @@ export function useInternetHistory() {
 
   return {
     currentUrl,
+    currentSearchQuery,
     canGoBack,
     loading,
     error,
     reloadKey,
     navigate,
+    navigateToSearch,
     goBack,
     reload,
     goHome,
