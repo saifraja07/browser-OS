@@ -157,19 +157,38 @@ button:focus-visible {
   min-height: var(--os-dock-height);
 }
 
-/* Boot screen: indeterminate progress sweep. Purely decorative — nothing
+/* Boot screen: each line/checklist row settles in with a short, subtle
+   fade + rise rather than popping in instantly. Purely decorative — nothing
    is actually loading, it just paces the startup beat. */
-@keyframes os-boot-bar {
-  0% {
-    transform: translateX(-100%);
+@keyframes os-line-in {
+  from {
+    opacity: 0;
   }
-  100% {
-    transform: translateX(400%);
+  to {
+    opacity: 1;
   }
 }
 
-.os-boot-bar {
-  animation: os-boot-bar 1.1s ease-in-out infinite;
+.os-line-in {
+  animation: os-line-in 250ms ease-out both;
+}
+
+/* Blinking caret shown at the end of whichever line is currently being
+   "typed" on the boot screen. */
+@keyframes os-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.os-caret {
+  display: inline-block;
+  width: 6px;
+  height: 0.9em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--color-os-border-strong);
+  animation: os-caret-blink 900ms steps(1) infinite;
 }
 
 .os-icon-shell {
