@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2 } from 'lucide-react';
+import { Pause, Play, Volume1, Volume2 } from 'lucide-react';
 import recordImage from '../../assets/icons/record.webp';
 import { TRACKS } from './tracks';
 import { MusicEngine } from './MusicEngine';
@@ -61,35 +61,6 @@ export default function MusicApp() {
     }
   };
 
-  const changeTrack = async (direction) => {
-    const nextIndex = (trackIndex + direction + TRACKS.length) % TRACKS.length;
-    const shouldPlay = isPlaying;
-
-    setTrackIndex(nextIndex);
-
-    // Keep the player's current state when using previous/next:
-    // playing -> immediately play the new track, paused -> only select it.
-    if (!shouldPlay) {
-      engineRef.current.stop();
-      return;
-    }
-
-    try {
-      await engineRef.current.play(TRACKS[nextIndex]);
-      setIsPlaying(true);
-    } catch {
-      setIsPlaying(false);
-    }
-  };
-
-  const handlePrevious = () => {
-    void changeTrack(-1);
-  };
-
-  const handleNext = () => {
-    void changeTrack(1);
-  };
-
   const handleVolume = (event) => {
     const nextVolume = Number(event.target.value);
     setVolume(nextVolume);
@@ -119,39 +90,14 @@ export default function MusicApp() {
             </div>
           </div>
 
-          <div className="music-app__controls mt-2 flex shrink-0 items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={handlePrevious}
-              className="pixel-cut music-app__skip flex shrink-0 items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
-              style={{ width: '36px', height: '32px' }}
-              aria-label="Previous track"
-              title="Previous track"
-            >
-              <SkipBack size={19} strokeWidth={2.5} />
-            </button>
-
-            <button
-              type="button"
-              onClick={togglePlay}
-              className="pixel-cut music-app__play flex items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-              title={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isPlaying ? <Pause size={18} strokeWidth={2.5} /> : <Play size={18} strokeWidth={2.5} className="ml-0.5" />}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="pixel-cut music-app__skip flex shrink-0 items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
-              style={{ width: '36px', height: '32px' }}
-              aria-label="Next track"
-              title="Next track"
-            >
-              <SkipForward size={19} strokeWidth={2.5} />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={togglePlay}
+            className="pixel-cut music-app__play mt-2 flex shrink-0 items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window transition-transform hover:-translate-y-0.5 active:translate-y-0"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? <Pause size={18} strokeWidth={2.5} /> : <Play size={18} strokeWidth={2.5} className="ml-0.5" />}
+          </button>
 
           <div className="music-app__volume my-4 flex w-full max-w-75 items-center gap-2 px-1">
             {volume === 0 ? (
