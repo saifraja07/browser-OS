@@ -119,6 +119,7 @@ export function openWindow(state, manifest, options = {}) {
     isMaximized: false,
     prevBounds: null,
     zIndex,
+    createdAt: Date.now(),
     resizable: manifest.resizable ?? true,
     draggable: manifest.draggable ?? true,
     props: options.props ?? {},

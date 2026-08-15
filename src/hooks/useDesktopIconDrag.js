@@ -2,8 +2,16 @@ import { useCallback, useRef } from 'react';
 import { useDesktopIconStore } from '../store/useDesktopIconStore';
 import { clampToDesktop } from '../core/desktopIcons/desktopIconEngine';
 
-/** Pointer movement, in px, before a press is treated as a drag instead of a click. */
-const DRAG_THRESHOLD = 4;
+/**
+ * Pointer movement, in px, before a press is treated as a drag instead of a
+ * click. A real touchscreen tap isn't perfectly still — capacitive sensing
+ * noise alone commonly produces a few px of jitter — so a threshold this
+ * tight risked misreading some genuine taps as micro-drags (the icon would
+ * "commit" an unnoticeably tiny position nudge instead of opening the
+ * app). 8px gives real taps headroom while still feeling immediate for
+ * intentional drags.
+ */
+const DRAG_THRESHOLD = 8;
 
 /**
  * Returns pointer handlers for a draggable desktop icon.
@@ -22,6 +30,8 @@ export function useDesktopIconDrag(appId, onOpen) {
     (e) => {
       const icon = useDesktopIconStore.getState().icons[appId];
       if (!icon) return;
+
+      if (e.pointerType !== 'mouse') e.preventDefault();
 
       dragState.current = {
         pointerId: e.pointerId,
@@ -58,6 +68,11 @@ export function useDesktopIconDrag(appId, onOpen) {
       const drag = dragState.current;
       if (!drag || e.pointerId !== drag.pointerId) return;
       dragState.current = null;
+
+      // Belt-and-suspenders alongside the pointerdown preventDefault() above
+      // — some browsers only fully suppress the trailing compatibility
+      // click when preventDefault() is also seen on pointerup.
+      if (e.pointerType !== 'mouse') e.preventDefault();
 
       if (drag.moved) {
         commitPositions();
