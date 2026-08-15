@@ -3,19 +3,42 @@ import InternetSearchLoading from "./InternetSearchLoading";
 import InternetSearchEmpty from "./InternetSearchEmpty";
 import InternetSearchError from "./InternetSearchError";
 import InternetSearchResultCard from "./InternetSearchResultCard";
+import InternetAnswerView from "./InternetAnswerView";
 
 export default function InternetSearchResults({
   query,
   loading,
   errorMessage,
   results,
+  quickAnswer,
+  quickAnswerLoading,
   onResultClick,
   onRetry,
 }) {
   if (loading) return <InternetSearchLoading query={query} />;
   if (errorMessage) return <InternetSearchError message={errorMessage} onRetry={onRetry} />;
-  if (results.length === 0) return <InternetSearchEmpty query={query} />;
 
+  // Guard against a premature "no results" flash: if there are no web
+  // results yet but the Wikipedia lookup hasn't settled, wait for it —
+  // it may still turn into a detailed answer worth showing.
+  const noContentYet = results.length === 0 && !quickAnswer?.found;
+  if (noContentYet && quickAnswerLoading) return <InternetSearchLoading query={query} />;
+  if (noContentYet) return <InternetSearchEmpty query={query} />;
+
+  // Strong Wikipedia match: answer-first layout (unboxed answer + up to
+  // two boxed source cards), and nothing else — see InternetAnswerView.
+  if (quickAnswer?.found) {
+    return (
+      <InternetAnswerView
+        answer={quickAnswer}
+        results={results}
+        onResultClick={onResultClick}
+      />
+    );
+  }
+
+  // No Wikipedia answer (irrelevant query, or Wikipedia unavailable):
+  // fall back to the existing plain results list, unchanged.
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="shrink-0 border-b-2 border-os-border bg-os-surface-2 px-3 py-2.5">

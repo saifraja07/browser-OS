@@ -1,17 +1,123 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, RotateCw, Home, ArrowRight, Globe } from "lucide-react";
+import {
+  ArrowLeft,
+  RotateCw,
+  Home,
+  ArrowRight,
+  Globe,
+  Bookmark,
+  Clock,
+  History,
+} from "lucide-react";
 import { useInternetHistory } from "./useInternetHistory";
 import { useInternetSearch } from "./useInternetSearch";
 import { isLikelyUrl } from "./normalizeUrl";
 import InternetErrorState from "./components/InternetErrorState";
 import InternetSearchResults from "./components/InternetSearchResults";
 
-const recentSites = [
-  "https://browser-os-one.vercel.app",
-  "https://berojgaryuva.vercel.app",
+const bookmarks = [
   "https://mirhaadi.in",
+  "https://berojgaryuva.vercel.app",
+  "https://browser-os-one.vercel.app",
 ];
 
+// Fixed set of trending searches shown on the Internet app's home
+// screen — plain search text only (never URLs), always the same list.
+const trendingSearches = [
+  "India got latent",
+  "Latest AI news",
+  "Weather today",
+  "how to center a div?",
+  "Cricket scores",
+];
+
+function hostnameOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+function faviconSrc(domain) {
+  if (!domain) return null;
+  return `https://www.google.com/s2/favicons?sz=32&domain=${encodeURIComponent(domain)}`;
+}
+
+/** A single Bookmarks/Recently-viewed row: an icon slot + label, boxed like a search-result card. */
+function HomeLinkRow({ icon, label, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={label}
+      className="flex w-full items-center gap-2.5 rounded-[14px] border-2 border-os-border-strong bg-os-surface-2 px-2.5 py-2 text-left transition-transform hover:-translate-y-0.5 hover:border-os-accent hover:bg-os-surface active:translate-y-0"
+    >
+      <span
+        aria-hidden="true"
+        className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded border border-os-border bg-os-surface"
+      >
+        {icon}
+      </span>
+
+      <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-os-ink">
+        {label}
+      </span>
+    </button>
+  );
+}
+
+/** A single Trending Searches row: plain, unboxed — just a history-style icon + label with a hover highlight, not a bordered card like Bookmarks. */
+function TrendingSearchRow({ query, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onClick(query)}
+      title={query}
+      className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-os-surface-2 active:bg-os-surface-2"
+    >
+      <History
+        size={13}
+        className="shrink-0 text-os-ink-soft"
+        aria-hidden="true"
+      />
+      <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-os-ink">
+        {query}
+      </span>
+    </button>
+  );
+}
+
+/** HomeLinkRow for a page URL (bookmarks, and 'url'-type recent entries): favicon + hostname. */
+function HomeUrlRow({ url, onClick }) {
+  const [faviconFailed, setFaviconFailed] = useState(false);
+  const domain = hostnameOf(url);
+  const icon = faviconSrc(domain);
+  const showFavicon = icon && !faviconFailed;
+
+  return (
+    <HomeLinkRow
+      label={domain}
+      onClick={() => onClick(url)}
+      icon={
+        showFavicon ? (
+          <img
+            src={icon}
+            alt=""
+            width={16}
+            height={16}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setFaviconFailed(true)}
+            className="h-4 w-4"
+          />
+        ) : (
+          <Globe size={12} className="text-os-ink-soft" />
+        )
+      }
+    />
+  );
+}
 
 export default function InternetApp() {
   const [inputUrl, setInputUrl] = useState("");
@@ -25,6 +131,7 @@ export default function InternetApp() {
     loading,
     error,
     reloadKey,
+    recentEntries,
     navigate,
     navigateToSearch,
     goBack,
@@ -39,6 +146,8 @@ export default function InternetApp() {
     results: searchResults,
     loading: searchLoading,
     errorMessage: searchErrorMessage,
+    quickAnswer,
+    quickAnswerLoading,
   } = useInternetSearch(currentSearchQuery, reloadKey);
 
   // The address bar always mirrors whatever the current history entry
@@ -82,6 +191,11 @@ export default function InternetApp() {
   const handleRecentSiteClick = (url) => {
     setInputUrl(url);
     goTo(url);
+  };
+
+  const handleRecentSearchClick = (query) => {
+    setInputUrl(query);
+    navigateToSearch(query);
   };
 
   const handleSearchResultClick = (url) => {
@@ -160,6 +274,8 @@ export default function InternetApp() {
             loading={searchLoading}
             errorMessage={searchErrorMessage}
             results={searchResults}
+            quickAnswer={quickAnswer}
+            quickAnswerLoading={quickAnswerLoading}
             onResultClick={handleSearchResultClick}
             onRetry={reload}
           />
@@ -187,40 +303,74 @@ export default function InternetApp() {
             </>
           )
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3 px-4 text-center">
+          <div className="flex h-full flex-col items-center overflow-y-auto px-4 pb-6 text-center">
             <Globe size={28} className="text-os-ink-soft" aria-hidden="true" />
 
-            <p className="font-display text-[12px] tracking-(--os-display-tracking) text-os-ink">
+            <p className="mt-3 font-display text-[12px] tracking-(--os-display-tracking) text-os-ink">
               INTERNET
             </p>
 
-            <p className="max-w-55 font-mono text-[10px] leading-relaxed text-os-ink-soft">
+            <p className="mt-1 max-w-55 font-mono text-[10px] leading-relaxed text-os-ink-soft">
               Enter a website or search above to begin.
             </p>
 
-            {/* Recently viewed */}
-            <div className="mt-2 w-full max-w-75">
-              <p className="mb-2 font-mono text-[9px] uppercase tracking-wider text-os-ink-soft">
-                Recently viewed
-              </p>
+            <div className="mt-5 flex w-full max-w-75 flex-col gap-5">
+              {trendingSearches.length > 0 && (
+                <div>
+                  <p className="mb-2 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider text-os-ink-soft">
+                    Trending Searches
+                  </p>
 
-              <div className="flex flex-col gap-1.5">
-                {recentSites.map((url) => (
-                  <button
-                    key={url}
-                    type="button"
-                    onClick={() => handleRecentSiteClick(url)}
-                    className="w-full truncate rounded border-2 border-os-border bg-os-surface-2 px-2 py-1.5 text-left font-mono text-[10px] text-os-ink hover:border-os-accent hover:bg-os-surface hover:text-os-accent"
-                  >
-                    {url}
-                  </button>
-                ))}
-              </div>
+                  <div className="flex flex-col">
+                    {trendingSearches.map((query) => (
+                      <TrendingSearchRow
+                        key={query}
+                        query={query}
+                        onClick={handleRecentSearchClick}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {bookmarks.length > 0 && (
+                <div>
+                  <p className="mb-2 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider text-os-ink-soft">
+                    <Bookmark size={9} aria-hidden="true" />
+                    Bookmarks
+                  </p>
+
+                  <div className="flex flex-col gap-1.5">
+                    {bookmarks.map((url) => (
+                      <HomeUrlRow
+                        key={url}
+                        url={url}
+                        onClick={handleRecentSiteClick}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {recentEntries.length > 0 && (
+                <div>
+                  <p className="mb-2 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider text-os-ink-soft">
+                    <Clock size={9} aria-hidden="true" />
+                    Recently viewed
+                  </p>
+
+                  <div className="flex flex-col gap-1.5">
+                    {recentEntries.map((entry) => (
+                      <HomeUrlRow
+                        key={entry.value}
+                        url={entry.value}
+                        onClick={handleRecentSiteClick}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-
-            <p className="max-w-55 font-mono text-[10px] leading-relaxed text-os-ink-soft">
-              This app is currently under development.
-            </p>
           </div>
         )}
       </div>

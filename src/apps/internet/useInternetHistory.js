@@ -5,41 +5,6 @@ const LOAD_TIMEOUT_MS = 8000;
 
 /**
  * In-memory navigation history for a single Internet app instance.
- *
- * Deliberately mirrors ExplorerApp's local-hook pattern (see
- * apps/explorer/hooks/useExplorerNav.js) rather than reaching for a global
- * store: this state only ever matters to one running Internet window and
- * is never persisted.
- *
- * A single stack (`history` / `historyIndex`) covers BOTH URL visits and
- * search-results views — there is deliberately no second, parallel
- * history for search (Phase 5). Each entry is either:
- *   { type: 'url',    value: <normalized URL> }
- *   { type: 'search', value: <trimmed query> }
- *
- * history / historyIndex otherwise behave like a standard browser stack:
- *   - goBack()/goForward() only move historyIndex; they never mutate the
- *     history array, so alternating Back/Forward never creates duplicate
- *     or dropped entries.
- *   - navigate(url) / navigateToSearch(query) both truncate any "forward"
- *     entries past the current index before pushing the new entry
- *     (A → B → C, back to B, navigate to D discards C) — regardless of
- *     whether the entries being truncated/pushed are URLs or searches.
- *   - re-submitting the same URL/query that's already current doesn't
- *     create a duplicate history entry, but does retry in place (like
- *     Reload) — useful for clicking Go again after a failed load, or
- *     hitting Enter again on the same search.
- *   - reload() never touches history, it just bumps a remount key that
- *     both the iframe (for URL entries) and useInternetSearch (for search
- *     entries, which re-fetches when it changes) key off of.
- *   - goHome() resets to the initial "no page loaded" state, which also
- *     naturally exits search — there's nothing search-specific to reset.
- *
- * `loading` / `error` are meaningful only for URL entries — they track
- * the iframe's best-effort load-timeout heuristic (see LOAD_TIMEOUT_MS
- * below) and are left alone by search navigation. Search's own
- * loading/error state is owned entirely by useInternetSearch, driven by
- * `currentSearchQuery` + `reloadKey` from this hook.
  */
 export function useInternetHistory() {
   const [history, setHistory] = useState([]); // array of { type: 'url' | 'search', value }
@@ -52,8 +17,33 @@ export function useInternetHistory() {
   const currentEntry = historyIndex >= 0 ? history[historyIndex] : null;
   const currentUrl = currentEntry?.type === 'url' ? currentEntry.value : null;
   const currentSearchQuery = currentEntry?.type === 'search' ? currentEntry.value : null;
-  const canGoBack = historyIndex > 0;
-  const canGoForward = historyIndex >= 0 && historyIndex < history.length - 1;
+  // The "no page loaded" Home state (historyIndex === -1) is itself a
+  // valid, reachable point in the stack — you can Back into it from the
+  // first entry, and Forward out of it back to that entry. So Back is
+  // available for ANY current entry (search or url), not just once a
+  // second entry exists; Forward is available whenever there's a later
+  // entry, including from Home itself.
+  const canGoBack = historyIndex >= 0;
+  const canGoForward = historyIndex < history.length - 1;
+
+  // Most-recently-visited PAGE entries for the home screen's "Recently
+  // viewed" list (newest first, deduped by url, current entry excluded).
+  // Search entries are deliberately skipped — the home screen already
+  // has a fixed "Trending Searches" list, so past search queries aren't
+  // tracked/surfaced separately. Derived straight from the same history
+  // stack everything else here uses — no separate tracking.
+  const recentEntries = [];
+  {
+    const seen = new Set();
+    for (let i = history.length - 1; i >= 0; i -= 1) {
+      const entry = history[i];
+      if (entry.type !== 'url') continue;
+      if (entry === currentEntry || seen.has(entry.value)) continue;
+      seen.add(entry.value);
+      recentEntries.push(entry);
+      if (recentEntries.length >= 5) break;
+    }
+  }
 
   const clearLoadTimeout = () => {
     if (timeoutRef.current) {
@@ -128,22 +118,26 @@ export function useInternetHistory() {
 
   const goBack = () => {
     if (!canGoBack) return;
-    const targetIndex = historyIndex - 1;
-    const targetEntry = history[targetIndex];
+    const targetIndex = historyIndex - 1; // may become -1 (Home)
+    const targetEntry = targetIndex >= 0 ? history[targetIndex] : null;
     setError(false);
     // Only the iframe (URL entries) uses this loading flag; a search
     // entry's loading state comes from useInternetSearch instead, and
     // going back to one that was already fetched shows its cached
-    // results immediately rather than re-searching.
+    // results immediately rather than re-searching. Landing back on
+    // Home (targetEntry === null) needs no loading state either.
     setLoading(targetEntry?.type === 'url');
     setHistoryIndex(targetIndex);
   };
 
   /**
    * Mirror image of goBack(): moves the index forward one entry without
-   * touching the history array itself. Only reachable when canGoForward
-   * is true (i.e. the user came here via goBack and hasn't since made a
-   * new navigation, which would have truncated anything ahead of it).
+   * touching the history array itself. Reachable both from a normal
+   * entry (there's a later one) and from Home (historyIndex === -1),
+   * since Home is itself a valid point you can Back into and Forward
+   * back out of. Only reachable when canGoForward is true (i.e. the
+   * user came here via goBack and hasn't since made a new navigation,
+   * which would have truncated anything ahead of it).
    */
   const goForward = () => {
     if (!canGoForward) return;
@@ -201,6 +195,7 @@ export function useInternetHistory() {
     loading,
     error,
     reloadKey,
+    recentEntries,
     navigate,
     navigateToSearch,
     goBack,
@@ -210,4 +205,4 @@ export function useInternetHistory() {
     handleLoaded,
     handleLoadError,
   };
-}
+} 
