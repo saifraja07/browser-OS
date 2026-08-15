@@ -18,6 +18,9 @@ const LOAD_TIMEOUT_MS = 8000;
  *   { type: 'search', value: <trimmed query> }
  *
  * history / historyIndex otherwise behave like a standard browser stack:
+ *   - goBack()/goForward() only move historyIndex; they never mutate the
+ *     history array, so alternating Back/Forward never creates duplicate
+ *     or dropped entries.
  *   - navigate(url) / navigateToSearch(query) both truncate any "forward"
  *     entries past the current index before pushing the new entry
  *     (A → B → C, back to B, navigate to D discards C) — regardless of
@@ -50,6 +53,7 @@ export function useInternetHistory() {
   const currentUrl = currentEntry?.type === 'url' ? currentEntry.value : null;
   const currentSearchQuery = currentEntry?.type === 'search' ? currentEntry.value : null;
   const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex >= 0 && historyIndex < history.length - 1;
 
   const clearLoadTimeout = () => {
     if (timeoutRef.current) {
@@ -136,6 +140,21 @@ export function useInternetHistory() {
   };
 
   /**
+   * Mirror image of goBack(): moves the index forward one entry without
+   * touching the history array itself. Only reachable when canGoForward
+   * is true (i.e. the user came here via goBack and hasn't since made a
+   * new navigation, which would have truncated anything ahead of it).
+   */
+  const goForward = () => {
+    if (!canGoForward) return;
+    const targetIndex = historyIndex + 1;
+    const targetEntry = history[targetIndex];
+    setError(false);
+    setLoading(targetEntry?.type === 'url');
+    setHistoryIndex(targetIndex);
+  };
+
+  /**
    * Reloads the current entry in place — no history change. For a URL
    * entry this remounts the iframe (existing behavior). For a search
    * entry, useInternetSearch re-fetches because it watches this same
@@ -178,12 +197,14 @@ export function useInternetHistory() {
     currentUrl,
     currentSearchQuery,
     canGoBack,
+    canGoForward,
     loading,
     error,
     reloadKey,
     navigate,
     navigateToSearch,
     goBack,
+    goForward,
     reload,
     goHome,
     handleLoaded,

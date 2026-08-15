@@ -21,12 +21,14 @@ export default function InternetApp() {
     currentUrl,
     currentSearchQuery,
     canGoBack,
+    canGoForward,
     loading,
     error,
     reloadKey,
     navigate,
     navigateToSearch,
     goBack,
+    goForward,
     reload,
     goHome,
     handleLoaded,
@@ -99,6 +101,16 @@ export default function InternetApp() {
           aria-label="Back"
         >
           <ArrowLeft size={15} />
+        </button>
+
+        <button
+          type="button"
+          onClick={goForward}
+          disabled={!canGoForward}
+          className="rounded p-1 text-os-ink-soft enabled:hover:bg-os-surface-2 enabled:hover:text-os-ink disabled:opacity-30"
+          aria-label="Forward"
+        >
+          <ArrowRight size={15} />
         </button>
 
         <button

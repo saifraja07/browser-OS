@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { searchInternet } from './internetSearchService';
+import { getCachedResults, setCachedResults } from './internetSearchCache';
 
 /**
  * Fetches search results for the Internet app's currently active search
@@ -9,21 +10,24 @@ import { searchInternet } from './internetSearchService';
  * unified history stack (`currentSearchQuery`, `reloadKey`), so there is
  * only ever one history system, not two.
  *
- * Mirrors useInternetHistory's own load-timeout effect in shape: an
- * effect keyed on the values that should trigger a (re)fetch, cleaning up
- * any in-flight request first.
+ * `lastQueryRef` is what distinguishes those two cases; it's compared
+ * against the incoming `query` inside the effect, before being updated to
+ * it. This mirrors useInternetHistory's own load-timeout effect in shape:
+ * an effect keyed on the values that should trigger a (re)fetch, cleaning
+ * up any in-flight request first.
  *
  * @param {string|null} query - the active search query, or null when not
  *   currently viewing search results (e.g. a URL or the home state).
- * @param {number} reloadKey - bumped by useInternetHistory's reload();
- *   changing it re-runs the fetch for the same query without touching
- *   history, so Reload repeats the current search with no duplicate entry.
+ * @param {number} reloadKey - bumped by useInternetHistory's reload() (and
+ *   by resubmitting the query already showing); changing it while `query`
+ *   is unchanged means "fetch fresh, ignore cache".
  */
 export function useInternetSearch(query, reloadKey) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const abortRef = useRef(null);
+  const lastQueryRef = useRef(null);
 
   useEffect(() => {
     abortRef.current?.abort();
@@ -31,10 +35,26 @@ export function useInternetSearch(query, reloadKey) {
     if (!query) {
       // Not currently viewing search results — nothing to fetch, and
       // stale results/errors from a previous query shouldn't linger.
+      lastQueryRef.current = null;
       setResults([]);
       setLoading(false);
       setErrorMessage(null);
       return undefined;
+    }
+
+    const isExplicitResubmit = lastQueryRef.current === query;
+    lastQueryRef.current = query;
+
+    if (!isExplicitResubmit) {
+      const cached = getCachedResults(query);
+      if (cached) {
+        // Cache hit: restore instantly, no loading state, no request —
+        // this is what makes Back/Forward feel instant.
+        setResults(cached);
+        setErrorMessage(null);
+        setLoading(false);
+        return undefined;
+      }
     }
 
     const controller = new AbortController();
@@ -47,7 +67,11 @@ export function useInternetSearch(query, reloadKey) {
     searchInternet(query, { signal: controller.signal })
       .then((data) => {
         if (controller.signal.aborted) return;
-        setResults(data?.results ?? []);
+        const freshResults = data?.results ?? [];
+        setResults(freshResults);
+        // Cache fresh results (or replace a stale/expired entry) so a
+        // future Back/Forward to this exact query is instant too.
+        setCachedResults(query, freshResults);
       })
       .catch((err) => {
         if (err?.name === 'AbortError' || controller.signal.aborted) return;
