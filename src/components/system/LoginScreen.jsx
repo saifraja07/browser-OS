@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { useWallpaperStore, getActiveWallpaperSrc } from '../../store/useWallpaperStore';
 import computerIcon from '../../assets/icons/computer.webp';
 
 /**
  * Cosmetic-only BrowserOS unlock screen shown after boot.
  * There is no real authentication here — the input is never validated,
  * and any Enter press (including on an empty field) unlocks straight into the desktop.
+ *
+ * The blurred/scaled wallpaper behind this screen is no longer rendered
+ * here — it's the same persistent <img> from WallpaperLayer (mounted once
+ * at the App root), which applies the blur/scale itself while stage ===
+ * 'login'. This screen is just the transparent UI overlay on top of it.
  */
 export default function LoginScreen({ onUnlock }) {
-  const wallpaperSrc = useWallpaperStore(getActiveWallpaperSrc);
   const [value, setValue] = useState('');
   const inputRef = useRef(null);
 
@@ -23,15 +26,6 @@ export default function LoginScreen({ onUnlock }) {
 
   return (
     <div className="relative h-dvh w-full overflow-hidden">
-      {/* Blurred wallpaper. Contained by the overflow-hidden wrapper above,
-          so the scale-up used for the blur bleed never pushes the document
-          itself into scrollable/overflow territory (the previous bug). */}
-      <div
-        className="absolute inset-0 scale-110 bg-cover bg-center blur-lg"
-        style={{ backgroundImage: `url(${wallpaperSrc})` }}
-        aria-hidden="true"
-      />
-
       <form
         onSubmit={handleUnlock}
         className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 overflow-y-auto px-4 py-8 text-center"

@@ -10,6 +10,7 @@ import NotificationCenter from './components/notifications/NotificationCenter';
 import BootScreen from './components/system/BootScreen';
 import LoginScreen from './components/system/LoginScreen';
 import Navbar from './components/system/Navbar';
+import WallpaperLayer from './components/system/WallpaperLayer';
 import { useIsMobile } from './hooks/useIsMobile';
 import { useViewportGuard } from './hooks/useViewportGuard';
 
@@ -25,28 +26,37 @@ export default function App() {
   // stores) is untouched by this and only mounts once we reach "desktop".
   const [systemStage, setSystemStage] = useState('boot');
 
-  if (systemStage === 'boot') {
-    return <BootScreen onFinish={() => setSystemStage('login')} />;
-  }
-
-  if (systemStage === 'login') {
-    return <LoginScreen onUnlock={() => setSystemStage('desktop')} />;
-  }
-
+  // Persistent wallpaper layer: mounted once, for every stage, so the same
+  // <img> element survives boot -> login -> desktop instead of each stage
+  // mounting (and re-decoding) its own wallpaper. See WallpaperLayer.jsx.
   return (
-    <Desktop isMobile={isMobile}>
-      <Navbar onShutDown={() => setSystemStage('boot')} />
-      <WindowManagerRoot />
-      {isMobile ? (
-        <>
-          <MobileDock />
-          <MobileAppsMenu />
-        </>
-      ) : (
-        <Dock />
+    <>
+      <WallpaperLayer stage={systemStage} />
+
+      {systemStage === 'boot' && (
+        <BootScreen onFinish={() => setSystemStage('login')} />
       )}
-      <ContextMenu />
-      <NotificationCenter />
-    </Desktop>
+
+      {systemStage === 'login' && (
+        <LoginScreen onUnlock={() => setSystemStage('desktop')} />
+      )}
+
+      {systemStage === 'desktop' && (
+        <Desktop isMobile={isMobile}>
+          <Navbar onShutDown={() => setSystemStage('boot')} />
+          <WindowManagerRoot />
+          {isMobile ? (
+            <>
+              <MobileDock />
+              <MobileAppsMenu />
+            </>
+          ) : (
+            <Dock />
+          )}
+          <ContextMenu />
+          <NotificationCenter />
+        </Desktop>
+      )}
+    </>
   );
 }
