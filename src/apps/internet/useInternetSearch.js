@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { searchInternet } from './internetSearchService';
+import { searchInternet, isInternetSearchConfigured } from './internetSearchService';
 import { searchWikipedia } from './wikipediaService';
 import { getCachedSearchState, setCachedSearchState } from './internetSearchCache';
 
@@ -95,21 +95,29 @@ export function useInternetSearch(query, reloadKey) {
       }
     };
 
-    searchInternet(query, { signal: controller.signal })
-      .then((data) => {
-        if (controller.signal.aborted) return;
-        const freshResults = data?.results ?? [];
-        setResults(freshResults);
-        latestResults = freshResults;
-        maybeCacheCombined();
-      })
-      .catch((err) => {
-        if (err?.name === 'AbortError' || controller.signal.aborted) return;
-        setErrorMessage(err?.message || 'Search failed. Please try again.');
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
+    // The external search backend is optional. If VITE_BROWSEROS_API_URL
+    // isn't set, skip it entirely and let Wikipedia carry the search
+    // instead of surfacing a "not configured" error.
+    if (isInternetSearchConfigured) {
+      searchInternet(query, { signal: controller.signal })
+        .then((data) => {
+          if (controller.signal.aborted) return;
+          const freshResults = data?.results ?? [];
+          setResults(freshResults);
+          latestResults = freshResults;
+          maybeCacheCombined();
+        })
+        .catch((err) => {
+          if (err?.name === 'AbortError' || controller.signal.aborted) return;
+          setErrorMessage(err?.message || 'Search failed. Please try again.');
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setLoading(false);
+        });
+    } else {
+      latestResults = [];
+      setLoading(false);
+    }
 
     // Runs in parallel with searchInternet above, not chained after it.
     // Wikipedia is an enhancement: any failure resolves to "not found"

@@ -15,18 +15,8 @@ export default function InternetSearchResults({
   onResultClick,
   onRetry,
 }) {
-  if (loading) return <InternetSearchLoading query={query} />;
-  if (errorMessage) return <InternetSearchError message={errorMessage} onRetry={onRetry} />;
-
-  // Guard against a premature "no results" flash: if there are no web
-  // results yet but the Wikipedia lookup hasn't settled, wait for it —
-  // it may still turn into a detailed answer worth showing.
-  const noContentYet = results.length === 0 && !quickAnswer?.found;
-  if (noContentYet && quickAnswerLoading) return <InternetSearchLoading query={query} />;
-  if (noContentYet) return <InternetSearchEmpty query={query} />;
-
-  // Strong Wikipedia match: answer-first layout (unboxed answer + up to
-  // two boxed source cards), and nothing else — see InternetAnswerView.
+  // Wikipedia answer wins: show it as soon as it's found, even while the
+  // optional web-results backend is still loading or has failed.
   if (quickAnswer?.found) {
     return (
       <InternetAnswerView
@@ -36,6 +26,10 @@ export default function InternetSearchResults({
       />
     );
   }
+
+  if (loading || quickAnswerLoading) return <InternetSearchLoading query={query} />;
+  if (errorMessage) return <InternetSearchError message={errorMessage} onRetry={onRetry} />;
+  if (results.length === 0) return <InternetSearchEmpty query={query} />;
 
   // No Wikipedia answer (irrelevant query, or Wikipedia unavailable):
   // fall back to the existing plain results list, unchanged.
