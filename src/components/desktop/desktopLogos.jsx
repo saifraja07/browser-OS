@@ -1,4 +1,5 @@
 import { AppIcon } from '../../assets/appIcons';
+import SocialsFolderGlyph from './socials/SocialsFolderGlyph';
 
 export const DESKTOP_LOGOS = {
   explorer: (props) => <AppIcon appId="explorer" {...props} />,
@@ -10,4 +11,5 @@ export const DESKTOP_LOGOS = {
   calendar: (props) => <AppIcon appId="calendar" {...props} />,
   messages: (props) => <AppIcon appId="messages" {...props} />,
   readme: (props) => <AppIcon appId="readme" {...props} />,
+  socials: (props) => <SocialsFolderGlyph {...props} />,
 };

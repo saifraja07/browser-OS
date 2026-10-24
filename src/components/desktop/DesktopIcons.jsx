@@ -1,5 +1,6 @@
 import { DEFAULT_APP_IDS } from '../../core/desktopIcons/constants';
 import DesktopIcon from './DesktopIcon';
+import SocialsPopup from './socials/SocialsPopup';
 
 /**
  * Renders every desktop shortcut. Positioning is per-icon (from
@@ -13,6 +14,7 @@ export default function DesktopIcons({ isMobile = false }) {
       {DEFAULT_APP_IDS.map((appId) => (
         <DesktopIcon key={appId} appId={appId} isMobile={isMobile} />
       ))}
+      <SocialsPopup />
     </>
   );
 }

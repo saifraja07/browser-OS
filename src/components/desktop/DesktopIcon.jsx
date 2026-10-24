@@ -5,6 +5,9 @@ import {
   selectIconPosition,
 } from "../../store/useDesktopIconStore";
 import { useDesktopIconDrag } from "../../hooks/useDesktopIconDrag";
+import { FOLDER_SHORTCUTS } from "../../core/desktopIcons/folderShortcuts";
+import { useSocialsStore } from "../../store/useSocialsStore";
+import { SOCIALS_TRIGGER_ATTR } from "./socials/SocialsPopup";
 import { DESKTOP_LOGOS } from "./desktopLogos";
 
 /**
@@ -44,10 +47,15 @@ const SIZES = {
  * click to open/focus.
  */
 export default function DesktopIcon({ appId, isMobile = false }) {
-  const manifest = getApp(appId);
+  // Folder shortcuts (e.g. My Socials) aren't registered apps — they toggle
+  // their own popup instead of opening a window.
+  const folder = FOLDER_SHORTCUTS[appId];
+  const manifest = folder ?? getApp(appId);
   const position = useDesktopIconStore(selectIconPosition(appId));
   const openApp = useWindowStore((s) => s.openApp);
-  const handleOpen = () => openApp(appId);
+  const toggleSocials = useSocialsStore((s) => s.toggle);
+  const isFolderOpen = useSocialsStore((s) => appId === "socials" && s.isOpen);
+  const handleOpen = () => (folder ? toggleSocials() : openApp(appId));
   const { onPointerDown, onPointerMove, onPointerUp, onPointerCancel } =
     useDesktopIconDrag(appId, handleOpen);
 
@@ -72,6 +80,13 @@ export default function DesktopIcon({ appId, isMobile = false }) {
       }}
       className="group flex cursor-pointer flex-col items-center gap-1 rounded-(--os-radius-sm) p-0.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-os-accent"
       aria-label={manifest.title}
+      {...(folder
+        ? {
+            [SOCIALS_TRIGGER_ATTR]: "",
+            "aria-haspopup": "dialog",
+            "aria-expanded": isFolderOpen,
+          }
+        : null)}
     >
       <span
         style={{
