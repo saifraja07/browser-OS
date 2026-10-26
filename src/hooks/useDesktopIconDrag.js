@@ -57,7 +57,10 @@ export function useDesktopIconDrag(appId, onOpen) {
       if (!drag.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
       drag.moved = true;
 
-      const next = clampToDesktop(drag.startIconX + dx, drag.startIconY + dy);
+      const workspace = useDesktopIconStore.getState().workspace;
+      if (!workspace) return;
+
+      const next = clampToDesktop(drag.startIconX + dx, drag.startIconY + dy, workspace);
       setPosition(appId, next.x, next.y);
     },
     [appId, setPosition]
@@ -75,12 +78,12 @@ export function useDesktopIconDrag(appId, onOpen) {
       if (e.pointerType !== 'mouse') e.preventDefault();
 
       if (drag.moved) {
-        commitPositions();
+        commitPositions(appId);
       } else {
         onOpen();
       }
     },
-    [commitPositions, onOpen]
+    [appId, commitPositions, onOpen]
   );
 
   return {

@@ -1,4 +1,5 @@
 import DesktopIcons from './DesktopIcons';
+import { useDesktopWorkspace } from '../../hooks/useDesktopWorkspace';
 
 /**
  * Desktop is the base layer: desktop icons + everything rendered above it.
@@ -12,8 +13,11 @@ import DesktopIcons from './DesktopIcons';
  * use the shared context menu where it makes sense (for example Explorer).
  */
 export default function Desktop({ children, isMobile = false }) {
+  // Feeds the real container size to the icon layout (see useDesktopWorkspace).
+  const workspaceRef = useDesktopWorkspace(isMobile);
+
   return (
-    <div className="relative h-dvh w-full overflow-hidden">
+    <div ref={workspaceRef} className="relative h-dvh w-full overflow-hidden">
       <DesktopIcons isMobile={isMobile} />
       {children}
     </div>

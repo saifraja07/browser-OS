@@ -1,8 +1,13 @@
-import { NAVBAR_HEIGHT } from '../windowManager/constants';
 import { MOBILE_BREAKPOINT, MOBILE_DOCK_HEIGHT } from '../windowManager/mobileLayout';
 
 export const STORAGE_KEY = 'browseros:desktop-icons';
 export const STORAGE_KEY_MOBILE = 'browseros:desktop-icons:mobile';
+/**
+ * Persisted shape: `{ v: 2, pins: { [appId]: { x, y } } }`. `pins` holds ONLY icons the
+ * user has dragged. Untouched icons are never saved, so they keep following the
+ * viewport. Data without `v` is the legacy format (every icon's absolute position).
+ */
+export const STORAGE_VERSION = 2;
 
 /** Apps that get a persistent desktop shortcut. */
 export const LEFT_SHORTCUT_APP_IDS = ['readme', 'settings', 'socials'];
@@ -19,57 +24,17 @@ export const DESKTOP_PADDING = 20;
 /** Extra breathing room below the navbar before desktop shortcuts may be dragged. */
 export const DESKTOP_ICON_TOP_RESERVE = 12;
 export const DOCK_RESERVE_HEIGHT = 104;
+/**
+ * Icon footprints (ICON_SIZE*) include padding around the visible icon, and the
+ * default mobile column is 2px tighter than its footprint (navbar clamp). Overlap
+ * smaller than this is cosmetic padding, not two icons on top of each other.
+ */
+export const ICON_OVERLAP_TOLERANCE = 4;
 
 /** Reuse the Window Manager's mobile breakpoint/dock reserve so every part of the OS agrees on what "mobile" means. */
 export { MOBILE_BREAKPOINT, MOBILE_DOCK_HEIGHT };
 
-const ROW_GAP = 14;
-const ROW_GAP_MOBILE = 10;
-const COLUMN_GAP = 16;
-const COLUMN_GAP_MOBILE = 10;
-
-function viewportWidth() {
-  return typeof window !== 'undefined' ? window.innerWidth : 1280;
-}
-
-/** Left group's default: stacked top-to-bottom, hugging the left edge, starting just below the navbar. */
-function buildLeftDefaults(size, rowGap) {
-  return LEFT_SHORTCUT_APP_IDS.reduce((positions, appId, index) => {
-    positions[appId] = {
-      x: DESKTOP_PADDING,
-      y: NAVBAR_HEIGHT + DESKTOP_PADDING + index * (size.height + rowGap),
-    };
-    return positions;
-  }, {});
-}
-
-/** Right group's default: a single row hugging the right edge, starting just below the navbar. */
-function buildRightDefaults(size, columnGap) {
-  const totalWidth =
-    RIGHT_SHORTCUT_APP_IDS.length * size.width + (RIGHT_SHORTCUT_APP_IDS.length - 1) * columnGap;
-  const startX = Math.max(DESKTOP_PADDING, viewportWidth() - DESKTOP_PADDING - totalWidth);
-
-  return RIGHT_SHORTCUT_APP_IDS.reduce((positions, appId, index) => {
-    positions[appId] = {
-      x: startX + index * (size.width + columnGap),
-      y: NAVBAR_HEIGHT + DESKTOP_PADDING,
-    };
-    return positions;
-  }, {});
-}
-
-/**
- * Sensible non-overlapping default layout — left column, right row, same
- * shape as the shortcut bar this grew out of — but every icon is freely
- * draggable from there, exactly like the rest of BrowserOS's desktop icons.
- */
-export const DEFAULT_POSITIONS = {
-  ...buildLeftDefaults(ICON_SIZE, ROW_GAP),
-  ...buildRightDefaults(ICON_SIZE, COLUMN_GAP),
-};
-
-/** Same left-column/right-row shape, just spaced for the smaller mobile icon size. */
-export const DEFAULT_POSITIONS_MOBILE = {
-  ...buildLeftDefaults(ICON_SIZE_MOBILE, ROW_GAP_MOBILE),
-  ...buildRightDefaults(ICON_SIZE_MOBILE, COLUMN_GAP_MOBILE),
-};
+export const ROW_GAP = 14;
+export const ROW_GAP_MOBILE = 10;
+export const COLUMN_GAP = 16;
+export const COLUMN_GAP_MOBILE = 10;
