@@ -27,7 +27,7 @@ export default function MobileDock() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.15 }}
-      className="os-dock rounded-xl pixel-cut fixed left-1/2 z-(--z-navbar) flex -translate-x-1/2 items-center gap-2 border-(length:--os-border-width) border-os-border-strong bg-os-surface/35 px-3 py-2 backdrop-blur-md shadow-os-window"
+      className="os-dock fixed left-1/2 z-(--z-navbar) flex -translate-x-1/2 items-center gap-2 rounded-[14px] bg-os-surface/35 px-3 py-2 shadow-[0_10px_30px_rgba(43,36,56,0.28),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl"
       style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${MOBILE_DOCK_BOTTOM_OFFSET}px)` }}
       aria-label="Application dock"
     >
@@ -75,10 +75,7 @@ function MobileDockButton({ label, isRunning, onClick, children, ...rest }) {
       {...rest}
     >
       <span
-        style={{ borderRadius: 'var(--os-icon-radius)' }}
-        className={`pixel-cut flex h-9 w-9 items-center justify-center border-(length:--os-border-width) border-os-border-strong shadow-os-window transition-colors ${
-          'bg-os-surface/55 text-os-ink'
-        }`}
+        className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-os-surface/75 text-os-ink shadow-[0_2px_6px_rgba(43,36,56,0.18)] transition-colors"
       >
         {children}
       </span>

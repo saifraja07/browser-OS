@@ -39,10 +39,10 @@ export default function MobileAppsMenu() {
     <>
       {/* Invisible tap-outside-to-close catcher — the wallpaper stays fully
           visible behind the menu, nothing is dimmed or blurred. */}
-      <div className="fixed inset-0 z-[var(--z-navbar)]" onClick={close} role="presentation" />
+      <div className="fixed inset-0 z-(--z-navbar)" onClick={close} role="presentation" />
 
       <div
-        className="pixel-cut rounded-[12px] fixed left-1/2 z-[var(--z-navbar-menu)] max-h-[min(20rem,calc(100dvh-10rem))] w-[min(18rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface p-3 shadow-os-window"
+        className="fixed left-1/2 z-(--z-navbar-menu) max-h-[min(20rem,calc(100dvh-10rem))] w-[min(18rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto rounded-[14px] bg-os-surface/70 p-3 shadow-[0_10px_30px_rgba(43,36,56,0.28),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl"
         style={{
           // Sits just above the mobile dock (not the desktop dock height).
           bottom: `calc(env(safe-area-inset-bottom, 0px) + ${
@@ -59,14 +59,11 @@ export default function MobileAppsMenu() {
                 key={app.id}
                 type="button"
                 onClick={() => handleOpenApp(app.id)}
-                className="flex flex-col items-center gap-1.5 rounded-[var(--os-radius-sm)] p-1.5 active:scale-95"
+                className="flex flex-col items-center gap-1.5 rounded-(--os-radius-sm) p-1.5 active:scale-95"
                 aria-label={app.title}
               >
-                <span
-                  style={{ borderRadius: 'var(--os-icon-radius)' }}
-                  className="pixel-cut flex h-11 w-11 items-center justify-center border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface-2 text-os-ink shadow-os-window"
-                >
-                  <AppIcon appId={app.id} size={26} />
+                <span className="flex h-11 w-11 items-center justify-center text-os-ink">
+                  <AppIcon appId={app.id} size={34} />
                 </span>
                 <span className="line-clamp-2 text-center font-display text-[8px] leading-tight text-os-ink">
                   {app.title}

@@ -28,6 +28,8 @@ const SIZES = {
     shell: 44,
     icon: 34,
     iconBox: "h-8 w-8",
+    bareIcon: 42,
+    bareBox: "h-[42px] w-[42px]",
     label: "text-[9px]",
   },
   mobile: {
@@ -35,6 +37,8 @@ const SIZES = {
     shell: 36,
     icon: 26,
     iconBox: "h-[26px] w-[26px]",
+    bareIcon: 34,
+    bareBox: "h-[34px] w-[34px]",
     label: "text-[8px]",
   },
 };
@@ -63,6 +67,9 @@ export default function DesktopIcon({ appId, isMobile = false }) {
 
   const Icon = DESKTOP_LOGOS[appId] ?? manifest.icon;
   const size = isMobile ? SIZES.mobile : SIZES.desktop;
+  // My Socials is the one icon that keeps a tile — restyled as frosted glass.
+  // Every other desktop icon is just its artwork on the wallpaper.
+  const isGlass = appId === "socials";
 
   return (
     <button
@@ -82,21 +89,33 @@ export default function DesktopIcon({ appId, isMobile = false }) {
       aria-label={manifest.title}
       {...(folder
         ? {
-            [SOCIALS_TRIGGER_ATTR]: "",
-            "aria-haspopup": "dialog",
-            "aria-expanded": isFolderOpen,
-          }
+          [SOCIALS_TRIGGER_ATTR]: "",
+          "aria-haspopup": "dialog",
+          "aria-expanded": isFolderOpen,
+        }
         : null)}
     >
       <span
         style={{
           width: size.shell,
           height: size.shell,
-          borderRadius: "var(--os-icon-radius)",
+          borderRadius: isGlass ? 10 : undefined,
         }}
-        className="pixel-cut flex items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface/90 text-os-ink shadow-os-window transition-shadow duration-150 group-hover:-translate-y-0.5 group-hover:shadow-os-window-focused"
+        className={`flex items-center justify-center text-os-ink transition-[transform,background-color,box-shadow] duration-150 group-hover:-translate-y-0.5 ${isGlass
+            ? "border border-white/45 bg-white/20 shadow-[0_8px_24px_rgba(31,38,135,0.25),inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-md group-hover:bg-white/30"
+            : ""
+          }`}
       >
-        {Icon ? <Icon size={size.icon} className={size.iconBox} /> : null}
+        {Icon ? (
+          <Icon
+            size={isGlass ? size.icon : size.bareIcon}
+            className={
+              isGlass
+                ? size.iconBox
+                : `${size.bareBox} drop-shadow-[0_2px_3px_rgba(0,0,0,0.4)]`
+            }
+          />
+        ) : null}
       </span>
       <span
         className={`line-clamp-2 text-center font-display ${size.label} leading-tight text-os-ink [text-shadow:0_1px_0_rgba(0,0,0,0.25)]`}

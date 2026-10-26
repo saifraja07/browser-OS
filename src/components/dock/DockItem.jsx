@@ -51,9 +51,9 @@ export default function DockItem({ app }) {
       aria-label={app.title}
     >
       <span
-        className="pixel-cut os-icon-shell flex items-center justify-center border-(length:--os-border-width) border-os-border-strong bg-os-surface text-os-ink shadow-os-window transition-[box-shadow,filter,transform] duration-150 group-hover:scale-105 group-hover:shadow-os-window-focused group-hover:brightness-110"
+        className="flex h-[52px] w-[52px] items-center justify-center rounded-lg bg-os-surface/75 text-os-ink shadow-[0_2px_6px_rgba(43,36,56,0.18)] transition-[background-color,box-shadow] duration-150 group-hover:bg-os-surface/95 group-hover:shadow-[0_6px_8px_rgba(43,36,56,0.28)]"
       >
-        {Icon ? <Icon size={28} className="h-7 w-7" /> : null}
+        {Icon ? <Icon size={34} className="h-8.5 w-8.5" /> : null}
       </span>
 
       <span
@@ -62,7 +62,7 @@ export default function DockItem({ app }) {
         } bg-os-ink-soft`}
       />
 
-      <span className="pointer-events-none absolute -top-9 whitespace-nowrap rounded-md border-(length:--os-border-width) border-os-border-strong bg-os-surface px-2 py-1 font-display text-[9px] text-os-ink opacity-0 shadow-os-window transition-all duration-150 group-hover:-translate-y-1 group-hover:opacity-100">
+      <span className="pointer-events-none absolute -top-9 whitespace-nowrap rounded-lg bg-os-surface/95 px-2.5 py-1 font-display text-[9px] text-os-ink opacity-0 shadow-[0_4px_8px_rgba(43,36,56,0.28)] backdrop-blur-sm transition-all duration-150 group-hover:-translate-y-1 group-hover:opacity-100">
         {app.title}
       </span>
     </motion.button>
