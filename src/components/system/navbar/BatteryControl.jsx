@@ -73,7 +73,7 @@ export default function BatteryControl() {
         aria-label={battery ? `Battery ${level}%` : 'Battery status'}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        className="flex h-8 w-8 items-center justify-center rounded-[var(--os-radius-sm)] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15 active:bg-white/20"
+        className="flex h-8 w-8 items-center justify-center rounded-(--os-radius-sm) text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15 active:bg-white/20"
       >
         <Icon size={16} strokeWidth={2.25} />
       </button>
@@ -83,7 +83,7 @@ export default function BatteryControl() {
           <SystemPanel
             title="Battery Status"
             onClose={closeMenu}
-            className="absolute right-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+            className="absolute right-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
           >
             {battery ? (
               <>
@@ -91,7 +91,7 @@ export default function BatteryControl() {
                   <span className="text-os-ink-soft">Level</span>
                   <span className="font-display text-[11px] text-os-ink">{level}%</span>
                 </div>
-                <div className="mt-2 h-2.5 w-full overflow-hidden rounded-[var(--os-radius-sm)] border-2 border-os-border bg-os-surface-2">
+                <div className="mt-2 h-2.5 w-full overflow-hidden rounded-(--os-radius-sm) border-2 border-os-border bg-os-surface-2">
                   <div className="h-full bg-os-ink transition-[width] duration-300" style={{ width: `${level}%` }} />
                 </div>
                 <p className="mt-3 text-os-ink-soft">

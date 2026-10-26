@@ -51,7 +51,7 @@ export default function DockItem({ app }) {
       aria-label={app.title}
     >
       <span
-        className="flex h-[52px] w-[52px] items-center justify-center rounded-lg bg-os-surface/75 text-os-ink shadow-[0_2px_6px_rgba(43,36,56,0.18)] transition-[background-color,box-shadow] duration-150 group-hover:bg-os-surface/95 group-hover:shadow-[0_6px_8px_rgba(43,36,56,0.28)]"
+        className="flex h-13 w-13 items-center justify-center rounded-lg bg-os-surface/75 text-os-ink shadow-[0_2px_6px_rgba(43,36,56,0.18)] transition-[background-color,box-shadow] duration-150 group-hover:bg-os-surface/95 group-hover:shadow-[0_6px_8px_rgba(43,36,56,0.28)]"
       >
         {Icon ? <Icon size={34} className="h-8.5 w-8.5" /> : null}
       </span>

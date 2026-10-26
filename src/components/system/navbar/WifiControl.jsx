@@ -25,7 +25,7 @@ export default function WifiControl() {
         aria-label="Wi-Fi status"
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        className="flex h-8 w-8 items-center justify-center rounded-[var(--os-radius-sm)] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15 active:bg-white/20"
+        className="flex h-8 w-8 items-center justify-center rounded-(--os-radius-sm) text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15 active:bg-white/20"
       >
         <Wifi size={16} strokeWidth={2.25} />
       </button>
@@ -35,7 +35,7 @@ export default function WifiControl() {
           <SystemPanel
             title="Wi-Fi"
             onClose={closeMenu}
-            className="absolute right-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+            className="absolute right-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
           >
             <div className="flex items-center justify-between">
               <span className="text-os-ink-soft">Status</span>

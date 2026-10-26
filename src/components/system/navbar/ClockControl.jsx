@@ -32,7 +32,7 @@ export default function ClockControl() {
         aria-label="Date and time"
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        className="rounded-[var(--os-radius-sm)] px-1.5 py-1 font-body text-[12px] tabular-nums text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15 active:bg-white/20"
+        className="rounded-(--os-radius-sm) px-1.5 py-1 font-body text-[12px] tabular-nums text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15 active:bg-white/20"
       >
         {formatTime(now)}
       </button>
@@ -42,7 +42,7 @@ export default function ClockControl() {
           <SystemPanel
             title="Date & Time"
             onClose={closeMenu}
-            className="absolute right-0 top-full z-[var(--z-navbar-menu)] mt-2 max-w-[calc(100vw-24px)]"
+            className="absolute right-0 top-full z-(--z-navbar-menu) mt-2 max-w-[calc(100vw-24px)]"
           >
             <p className="text-center font-display text-xl text-os-ink">{formatTime(now)}</p>
             <p className="mt-1.5 text-center text-[12px] text-os-ink">{formatDate(now)}</p>

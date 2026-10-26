@@ -32,9 +32,8 @@ function SocialShortcut({ link }) {
         width="48"
         height="48"
         draggable="false"
-        className={`h-9 w-9 rounded-[10px] shadow-os-window transition-[transform,box-shadow] duration-150 group-hover:-translate-y-0.5 group-hover:shadow-os-window-focused sm:h-11 sm:w-11 lg:h-12 lg:w-12 ${
-          available ? '' : 'opacity-50 grayscale'
-        }`}
+        className={`h-9 w-9 rounded-[10px] shadow-os-window transition-[transform,box-shadow] duration-150 group-hover:-translate-y-0.5 group-hover:shadow-os-window-focused sm:h-11 sm:w-11 lg:h-12 lg:w-12 ${available ? '' : 'opacity-50 grayscale'
+          }`}
       />
       <span className="font-display text-[8px] leading-tight sm:text-[9px] text-os-ink [text-shadow:0_1px_0_rgba(255,255,255,0.35)]">
         {link.label}
@@ -127,24 +126,24 @@ export default function SocialsPopup() {
 
   const panelMotion = reduceMotion
     ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1, transition: { duration: 0.15 } },
-        exit: { opacity: 0, transition: { duration: 0.12 } },
-      }
+      initial: { opacity: 0 },
+      animate: { opacity: 1, transition: { duration: 0.15 } },
+      exit: { opacity: 0, transition: { duration: 0.12 } },
+    }
     : {
-        initial: { opacity: 0, scale: 0.6, y: 8 },
-        animate: {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          transition: { ...SPRING, opacity: { duration: 0.18, ease: 'easeOut' } },
-        },
-        exit: { opacity: 0, scale: 0.85, y: 6, transition: { duration: 0.16, ease: [0.4, 0, 1, 1] } },
-      };
+      initial: { opacity: 0, scale: 0.6, y: 8 },
+      animate: {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: { ...SPRING, opacity: { duration: 0.18, ease: 'easeOut' } },
+      },
+      exit: { opacity: 0, scale: 0.85, y: 6, transition: { duration: 0.16, ease: [0.4, 0, 1, 1] } },
+    };
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 z-[250] flex items-center justify-center px-3"
+      className="pointer-events-none absolute inset-x-0 z-250 flex items-center justify-center px-3"
       style={{ top: NAVBAR_HEIGHT, bottom: dockReserve }}
     >
       <AnimatePresence>
@@ -156,7 +155,7 @@ export default function SocialsPopup() {
             aria-label="My Socials"
             {...panelMotion}
             style={{ transformOrigin: origin }}
-            className="pointer-events-auto w-full max-w-[270px] sm:max-w-[330px] lg:max-w-[370px] rounded-[18px] border-(length:--os-border-width) border-os-border-strong bg-transparent px-3 pt-2.5 pb-3 sm:px-4 sm:pt-3 sm:pb-3.5 shadow-os-window backdrop-blur-sm"
+            className="pointer-events-auto w-full max-w-67.5 sm:max-w-82.5 lg:max-w-92.5 rounded-[18px] border-(length:--os-border-width) border-os-border-strong bg-transparent px-3 pt-2.5 pb-3 sm:px-4 sm:pt-3 sm:pb-3.5 shadow-os-window backdrop-blur-sm"
           >
             <h2 className="mb-1.5 text-center font-display text-[10px] sm:mb-2 sm:text-[11px] text-os-ink [text-shadow:0_1px_0_rgba(255,255,255,0.35)]">
               My Socials
