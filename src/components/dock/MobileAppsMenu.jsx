@@ -2,6 +2,11 @@ import { getAllApps } from '../../core/appRuntime/appRegistry';
 import { useWindowStore } from '../../store/useWindowStore';
 import { useMobileUIStore } from '../../store/useMobileUIStore';
 import { AppIcon } from '../../assets/appIcons';
+import {
+  MOBILE_DOCK_BOTTOM_OFFSET,
+  MOBILE_DOCK_BODY_HEIGHT,
+  MOBILE_APPS_MENU_GAP,
+} from './mobileDockConstants';
 
 /**
  * The center dock button's destination: every registered app in a compact
@@ -9,6 +14,10 @@ import { AppIcon } from '../../assets/appIcons';
  * transition, no full-screen dimming — a simple popover, not a sheet.
  * Pulls straight from the app registry (getAllApps) — never a hand-rolled
  * list — so new apps show up here automatically.
+ *
+ * Fixed-size card: a set width (capped to the screen on tiny phones) centered
+ * over the dock, so it looks the same on phones and tablets instead of
+ * stretching edge-to-edge and spreading three icons across the whole screen.
  */
 export default function MobileAppsMenu() {
   const isOpen = useMobileUIStore((s) => s.isAllAppsOpen);
@@ -33,14 +42,17 @@ export default function MobileAppsMenu() {
       <div className="fixed inset-0 z-[var(--z-navbar)]" onClick={close} role="presentation" />
 
       <div
-        className="pixel-cut rounded-[12px] fixed inset-x-6 z-[var(--z-navbar-menu)] max-h-[50vh] overflow-y-auto border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface p-4 shadow-os-window"
+        className="pixel-cut rounded-[12px] fixed left-1/2 z-[var(--z-navbar-menu)] max-h-[min(20rem,calc(100dvh-10rem))] w-[min(18rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto border-[length:var(--os-border-width)] border-os-border-strong bg-os-surface p-3 shadow-os-window"
         style={{
-          bottom: 'calc(env(safe-area-inset-bottom, 0px) + var(--os-dock-height) + 22px)',
+          // Sits just above the mobile dock (not the desktop dock height).
+          bottom: `calc(env(safe-area-inset-bottom, 0px) + ${
+            MOBILE_DOCK_BOTTOM_OFFSET + MOBILE_DOCK_BODY_HEIGHT + MOBILE_APPS_MENU_GAP
+          }px)`,
         }}
         role="dialog"
         aria-label="All apps"
       >
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-1">
           {apps.map((app) => {
             return (
               <button

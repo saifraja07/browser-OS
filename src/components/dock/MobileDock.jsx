@@ -3,7 +3,11 @@ import { AppIcon } from '../../assets/appIcons';
 import { getApp } from '../../core/appRuntime/appRegistry';
 import { useWindowStore } from '../../store/useWindowStore';
 import { useMobileUIStore } from '../../store/useMobileUIStore';
-import { MOBILE_PRIMARY_LEFT_APP, MOBILE_PRIMARY_RIGHT_APP } from './mobileDockConstants';
+import {
+  MOBILE_PRIMARY_LEFT_APP,
+  MOBILE_PRIMARY_RIGHT_APP,
+  MOBILE_DOCK_BOTTOM_OFFSET,
+} from './mobileDockConstants';
 
 /**
  * Mobile dock: exactly 3 icons — a primary app on each side, All Apps in
@@ -24,7 +28,7 @@ export default function MobileDock() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.15 }}
       className="os-dock rounded-xl pixel-cut fixed left-1/2 z-(--z-navbar) flex -translate-x-1/2 items-center gap-2 border-(length:--os-border-width) border-os-border-strong bg-os-surface/35 px-3 py-2 backdrop-blur-md shadow-os-window"
-      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${MOBILE_DOCK_BOTTOM_OFFSET}px)` }}
       aria-label="Application dock"
     >
       <MobilePrimaryButton appId={MOBILE_PRIMARY_LEFT_APP} />
